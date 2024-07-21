@@ -1,0 +1,27 @@
+{{- range .Values.services }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .name }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .name }}.{{ $.Values.domain }}
+    external-dns.alpha.kubernetes.io/target: rossreicks.duckdns.org
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - {{ .name }}.{{ $.Values.domain }}
+    secretName: wildcard-cert-prod-tls
+  rules:
+    - host: {{ .name }}.{{ $.Values.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .name }}
+                port:
+                  number: 80
+---
+{{- end }}

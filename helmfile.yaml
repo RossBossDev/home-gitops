@@ -1,0 +1,53 @@
+repositories:
+  - name: pihole
+    url: https://mojo2600.github.io/pihole-kubernetes/
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+  - name: cert-manager
+    url: https://charts.jetstack.io
+  - name: external-dns
+    url: https://kubernetes-sigs.github.io/external-dns/
+  - name: bitwarden
+    url: https://charts.bitwarden.com/
+
+releases:
+  - name: ingress-nginx
+    namespace: ingress-nginx
+    chart: ingress-nginx/ingress-nginx
+  - name: bitwarden
+    namespace: bitwarden
+    version: 0.1.0-Beta
+    chart: bitwarden/sm-operator
+    values:
+      - bitwarden.yaml
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: v1.15.1
+    values:
+      - cert-manager.yaml
+  - name: demo
+    namespace: default
+    chart: ./demo-app
+  - name: letsencrypt-staging
+    chart: ./lets-encrypt/staging
+  - name: letsencrypt-prod
+    chart: ./lets-encrypt/production
+  - name: external-secrets
+    namespace: external-secrets
+    chart: external-secrets/external-secrets
+  - name: external-dns
+    namespace: external-dns
+    chart: external-dns/external-dns
+    values:
+      - external-dns-cf.yaml
+  - name: certs
+    namespace: default
+    chart: ./certs
+  - name: arr-stack
+    namespace: default
+    chart: ./arr-stack
+    values:
+      - ./arr-stack/values.yaml
+  - name: plex
+    chart: ./plex

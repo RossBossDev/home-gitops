@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex-kube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex-kube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: plex-kube
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+            - name: VERSION
+              value: docker
+          image: lscr.io/linuxserver/plex:latest
+          name: plex
+          ports:
+            - containerPort: 32400
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: plex-config-claim
+            - mountPath: /datapool
+              name: datapool
+      restartPolicy: Always
+      volumes:
+        - name: datapool
+          flexVolume:
+            driver: "fstab/cifs"
+            fsType: "cifs"
+            secretRef:
+              name: "cifs-secret"
+            options:
+              networkPath: "//192.168.1.11/datapool"
+              mountOptions: "uid=1000,gid=1000"
+        - name: plex-config-claim
+          persistentVolumeClaim:
+            claimName: plex-config-claim-large
