@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ha
+spec:
+  ports:
+  - name: ha
+    port: 80
+    targetPort: 8123
+    protocol: TCP

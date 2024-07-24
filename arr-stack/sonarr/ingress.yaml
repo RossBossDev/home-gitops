@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarr-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: sonarr.rossreicks.com
+    external-dns.alpha.kubernetes.io/target: rossreicks.duckdns.org
+    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - sonarr.rossreicks.com
+    secretName: wildcard-cert-prod-tls
+  rules:
+    - host: sonarr.rossreicks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarr-kube
+                port:
+                  number: 80

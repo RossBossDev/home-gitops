@@ -1,27 +1,25 @@
-{{- range .Values.services }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .name }}
+  name: overseerr-ingress
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: {{ .name }}.{{ $.Values.domain }}
+    external-dns.alpha.kubernetes.io/hostname: overseerr.rossreicks.com
     external-dns.alpha.kubernetes.io/target: rossreicks.duckdns.org
+    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - {{ .name }}.{{ $.Values.domain }}
+    - overseerr.rossreicks.com
     secretName: wildcard-cert-prod-tls
   rules:
-    - host: {{ .name }}.{{ $.Values.domain }}
+    - host: overseerr.rossreicks.com
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ .name }}
+                name: overseerr-kube
                 port:
                   number: 80
----
-{{- end }}

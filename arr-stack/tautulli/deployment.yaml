@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tautulli-kube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tautulli-kube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tautulli-kube
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: lscr.io/linuxserver/tautulli:latest
+          name: tautulli
+          ports:
+            - containerPort: 8181
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: tautulli-config-claim
+      restartPolicy: Always
+      volumes:
+        - name: tautulli-config-claim
+          persistentVolumeClaim:
+            claimName: tautulli-config-claim

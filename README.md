@@ -29,3 +29,13 @@ kubectl create secret generic bitwarden-access-token -n bitwarden-secret-store -
 kubectl create secret generic cifs-secret --from-literal=username=YOUR_CIFS_USERNAME_BASE64 --from-literal=password=YOUR_CIFS_PASSWORD_BASE64
 ```
 
+
+## Help Commands
+
+### Copy secret to another namespace
+
+* you will probably need this command to copy the wildcard cert to each namespace that needs it as well as the bitwarden secret if you are fetching external secrets from bitwarden.
+
+```bash
+kubectl get secret SECRET_NAME -n NAMESPACE -o yaml | sed 's/namespace: NAMESPACE/namespace: NEW_NAMESPACE/g' | kubectl apply -f -
+```

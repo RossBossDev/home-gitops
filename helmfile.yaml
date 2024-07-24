@@ -9,6 +9,10 @@ repositories:
     url: https://kubernetes-sigs.github.io/external-dns/
   - name: bitwarden
     url: https://charts.bitwarden.com/
+  - name: rancher-alpha
+    url: https://releases.rancher.com/server-charts/alpha
+  - name: longhorn
+    url: https://charts.longhorn.io
 
 releases:
   - name: ingress-nginx
@@ -44,10 +48,38 @@ releases:
   - name: certs
     namespace: default
     chart: ./certs
-  - name: arr-stack
-    namespace: default
-    chart: ./arr-stack
-    values:
-      - ./arr-stack/values.yaml
   - name: plex
     chart: ./plex
+  - name: rancher
+    namespace: cattle-system
+    version: 2.9.0-alpha7
+    chart: rancher-alpha/rancher
+    values:
+      - rancher.yaml
+  - name: longhorn
+    namespace: longhorn-system
+    chart: longhorn/longhorn
+    version: 1.6.2
+  - name: longhorn-ingress
+    namespace: longhorn-system
+    chart: ./longhorn
+  - name: sonarr
+    chart: ./arr-stack/sonarr
+    namespace: arr-stack
+  - name: radarr
+    chart: ./arr-stack/radarr
+    namespace: arr-stack
+  - name: prowlarr
+    chart: ./arr-stack/prowlarr
+    namespace: arr-stack
+  - name: nzbget
+    chart: ./arr-stack/nzb
+    namespace: arr-stack
+  - name: tautulli
+    chart: ./arr-stack/tautulli
+    namespace: arr-stack
+  - name: overseerr
+    chart: ./arr-stack/overseerr
+    namespace: arr-stack
+  - name: ha
+    chart: ./home-assistant

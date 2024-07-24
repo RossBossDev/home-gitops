@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nzb-kube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nzb-kube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nzb-kube
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: lscr.io/linuxserver/nzbget:latest
+          name: nzb
+          ports:
+            - containerPort: 9696
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: nzb-login
+          volumeMounts:
+            - mountPath: /config
+              name: nzb-config-claim
+            - mountPath: /downloads
+              name: downloads
+      restartPolicy: Always
+      volumes:
+        - name: nzb-config-claim
+          persistentVolumeClaim:
+            claimName: nzb-config-claim
+
+        - name: downloads
+          flexVolume:
+            driver: "fstab/cifs"
+            fsType: "cifs"
+            secretRef:
+              name: "cifs-secret"
+            options:
+              networkPath: "//192.168.1.11/datapool/media/downloads"
+              mountOptions: "uid=1000,gid=1000"

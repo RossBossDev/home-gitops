@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr-kube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr-kube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sonarr-kube
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+            - name: VERSION
+              value: docker
+          image: lscr.io/linuxserver/sonarr:latest
+          name: sonarr
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: sonarr-config-claim
+            - mountPath: /tv
+              name: datapool
+            - mountPath: /downloads
+              name: downloads
+      restartPolicy: Always
+      volumes:
+        - name: datapool
+          flexVolume:
+            driver: "fstab/cifs"
+            fsType: "cifs"
+            secretRef:
+              name: "cifs-secret"
+            options:
+              networkPath: "//192.168.1.11/datapool/media/media/tv"
+              mountOptions: "uid=1000,gid=1000"
+        - name: downloads
+          flexVolume:
+            driver: "fstab/cifs"
+            fsType: "cifs"
+            secretRef:
+              name: "cifs-secret"
+            options:
+              networkPath: "//192.168.1.11/datapool/media/downloads"
+              mountOptions: "uid=1000,gid=1000"
+        - name: sonarr-config-claim
+          persistentVolumeClaim:
+            claimName: sonarr-config-claim

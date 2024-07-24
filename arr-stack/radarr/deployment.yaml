@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr-kube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr-kube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: radarr-kube
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+            - name: VERSION
+              value: docker
+          image: lscr.io/linuxserver/radarr:latest
+          name: radarr
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: radarr-config-claim
+            - mountPath: /movies
+              name: datapool
+            - mountPath: /downloads
+              name: downloads
+      restartPolicy: Always
+      volumes:
+        - name: datapool
+          flexVolume:
+            driver: "fstab/cifs"
+            fsType: "cifs"
+            secretRef:
+              name: "cifs-secret"
+            options:
+              networkPath: "//192.168.1.11/datapool/media/media/movies"
+              mountOptions: "uid=1000,gid=1000"
+        - name: downloads
+          flexVolume:
+            driver: "fstab/cifs"
+            fsType: "cifs"
+            secretRef:
+              name: "cifs-secret"
+            options:
+              networkPath: "//192.168.1.11/datapool/media/downloads"
+              mountOptions: "uid=1000,gid=1000"
+        - name: radarr-config-claim
+          persistentVolumeClaim:
+            claimName: radarr-config-claim

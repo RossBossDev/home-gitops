@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: overseerr-kube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: overseerr-kube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: overseerr-kube
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: lscr.io/linuxserver/overseerr:latest
+          name: overseerr
+          ports:
+            - containerPort: 5055
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: overseerr-config-claim
+      restartPolicy: Always
+      volumes:
+        - name: overseerr-config-claim
+          persistentVolumeClaim:
+            claimName: overseerr-config-claim
