@@ -83,3 +83,11 @@ releases:
     namespace: arr-stack
   - name: ha
     chart: ./home-assistant
+  - name: mongodb
+    chart: ./mongodb
+    namespace: mongodb
+  - name: main-api
+    chart: ./main-api
+    namespace: default
+  - name: duckdns
+    chart: ./duckdns

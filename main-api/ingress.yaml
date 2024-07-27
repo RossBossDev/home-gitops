@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: api.rossreicks.com
+    external-dns.alpha.kubernetes.io/target: rossreicks.duckdns.org
+    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.rossreicks.com
+    secretName: wildcard-cert-prod-tls
+  rules:
+    - host: api.rossreicks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: main-api
+                port:
+                  number: 80

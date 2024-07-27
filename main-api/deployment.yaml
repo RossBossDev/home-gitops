@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: main-api
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: main-api
+    spec:
+      containers:
+        - env:
+            - name: PORT
+              value: "3000"
+          envFrom:
+            - secretRef:
+                name: mongo-uri-secret
+          image: rossreicks/freshness:latest
+          name: hello-fresh-api
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: k8s.bitwarden.com/v1
+kind: BitwardenSecret
+metadata:
+  name: mongo-uri-secret
+spec:
+  organizationId: 4f7f686d-bd5a-4fe5-8b27-b1b3000f631d
+  secretName: mongo-uri-secret
+  map:
+    - bwSecretId: 6ce85f0b-332f-43cb-aa88-b1ba001bdcfe
+      secretKeyName: MONGO_URI
+  authToken:
+    secretName: bitwarden-access-token
+    secretKey: token
