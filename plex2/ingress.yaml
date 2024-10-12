@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: plex
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: plex.rossreicks.com
+    external-dns.alpha.kubernetes.io/target: rossreicks.duckdns.org
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - plex.rossreicks.com
+    secretName: wildcard-cert-prod-tls
+  rules:
+    - host: plex.rossreicks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: plex
+                port:
+                  number: 80
