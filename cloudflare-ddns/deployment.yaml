@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflare-ddns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflare-ddns
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cloudflare-ddns
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: DOMAINS
+              value: "home.rossreicks.com"
+            - name: PROXIED
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: cloudflare-token-secret
+          image: favonia/cloudflare-ddns:latest
+          name: cloudflare-ddns
+
+      restartPolicy: Always
+---
+apiVersion: k8s.bitwarden.com/v1
+kind: BitwardenSecret
+metadata:
+  name: cloudflare-ddns-secret
+spec:
+  organizationId: 4f7f686d-bd5a-4fe5-8b27-b1b3000f631d
+  secretName: cloudflare-token-secret
+  map:
+    - bwSecretId: bd24f3eb-0102-4787-8feb-b21b0027a850
+      secretKeyName: CLOUDFLARE_API_TOKEN
+  authToken:
+    secretName: bitwarden-access-token
+    secretKey: token

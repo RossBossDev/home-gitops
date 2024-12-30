@@ -10,7 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
     nginx.ingress.kubernetes.io/proxy-body-size: 10000m
     external-dns.alpha.kubernetes.io/hostname: longhorn.rossreicks.com
-    external-dns.alpha.kubernetes.io/target: rossreicks.duckdns.org
+    external-dns.alpha.kubernetes.io/target: home.rossreicks.com
 spec:
   ingressClassName: nginx
   tls:

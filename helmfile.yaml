@@ -16,6 +16,11 @@ releases:
   - name: ingress-nginx
     namespace: ingress-nginx
     chart: ingress-nginx/ingress-nginx
+  - name: pi-hole
+    namespace: pihole
+    chart: pihole/pihole
+    values:
+      - pihole/values.yaml
   - name: bitwarden
     namespace: bitwarden
     version: 0.1.0-Beta
@@ -89,3 +94,7 @@ releases:
     namespace: default
   - name: coolify
     chart: ./coolify
+  - name: cloudflare-ddns
+    chart: ./cloudflare-ddns
+  - name: coolify-apis
+    chart: ./coolify-apis

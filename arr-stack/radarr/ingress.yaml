@@ -4,7 +4,7 @@ metadata:
   name: radarr-ingress
   annotations:
     external-dns.alpha.kubernetes.io/hostname: radarr.rossreicks.com
-    external-dns.alpha.kubernetes.io/target: rossreicks.duckdns.org
+    external-dns.alpha.kubernetes.io/target: home.rossreicks.com
     nginx.ingress.kubernetes.io/proxy-body-size: 10000m
 spec:
   ingressClassName: nginx
