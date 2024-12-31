@@ -96,5 +96,3 @@ releases:
     chart: ./coolify
   - name: cloudflare-ddns
     chart: ./cloudflare-ddns
-  - name: coolify-apis
-    chart: ./coolify-apis

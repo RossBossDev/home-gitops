@@ -1,12 +1,15 @@
 {
     email {{ caddy_email }}
+    dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
 {% for ingress in ingresses %}
 {% for rule in ingress.spec.rules %}
 {% if rule.host %}
 https://{{ rule.host }} {
-    tls {{ caddy_email }}
+    tls {
+        dns cloudflare
+    }
     reverse_proxy http://{{ rule.host }} { # Proxy to the hostname defined in the Ingress
         header_up Host {host} # Crucial for host-based routing
         header_up X-Forwarded-Proto https
