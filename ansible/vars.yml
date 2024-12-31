@@ -22,3 +22,5 @@ domains:
     backend: 192.168.1.14:32400
   - name: ha.rossreicks.com
     backend: 192.168.1.187:8123
+  - name: wordle.rossreicks.com
+    backend: 192.168.80.80:80
