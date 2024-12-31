@@ -79,16 +79,9 @@ releases:
   - name: main-api
     chart: ./main-api
     namespace: default
-  - name: duckdns
-    chart: ./duckdns
-  - name: plex2
-    chart: ./plex2
   - name: bazarr
     chart: ./arr-stack/bazarr
     namespace: arr-stack
-  - name: ha
-    chart: ./home-assistant
-    namespace: default
   - name: coolify
     chart: ./coolify
   - name: cloudflare-ddns
