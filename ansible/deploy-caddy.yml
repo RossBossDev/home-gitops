@@ -15,7 +15,6 @@
       set_fact:
         ingresses: "{{ namespace_ingresses.results | map(attribute='resources') | flatten }}"
 
-
     - name: Template Caddyfile
       template:
         src: ansible/caddyfile.j2
