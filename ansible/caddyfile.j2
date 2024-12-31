@@ -5,7 +5,7 @@
 {% for domain in domains %}
 https://{{ domain.name }} {
     tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        dns cloudflare {$CLOUDFLARE_API_TOKEN}
     }
     reverse_proxy {{ domain.backend }}
 }
