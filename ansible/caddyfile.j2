@@ -9,7 +9,7 @@ https://{{ rule.host }} {
     tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
-    reverse_proxy http://{{ rule.host }} { # Proxy to the hostname defined in the Ingress
+    reverse_proxy 192.168.80.80 { # Proxy to the hostname defined in the Ingress
         header_up Host {host} # Crucial for host-based routing
         header_up X-Forwarded-Proto https
         header_up X-Real-IP {remote_host}
