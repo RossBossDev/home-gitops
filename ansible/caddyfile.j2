@@ -1,12 +1,6 @@
 {
     email {{ caddy_email }}
-    module: 'acme'
-    challenges {
-        dns: {
-            provider: cloudflare
-            api_token: {env.CLOUDFLARE_API_TOKEN}
-        }
-    }
+    acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
 {% for ingress in ingresses %}
