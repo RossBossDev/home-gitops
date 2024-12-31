@@ -12,4 +12,4 @@ jobs:
             - name: Run Ansible Playbook
               working-directory: ansible
               run: |
-                  ansible-playbook deploy-caddy.yml -i inventory.ini -vvv
+                  ansible-playbook deploy-caddy.yml -i inventory.ini -vvv -e "cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}"

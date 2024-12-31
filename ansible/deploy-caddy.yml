@@ -22,6 +22,8 @@
         dest: /etc/caddy/Caddyfile
       vars:
         ingresses: "{{ ingresses.resources }}"
+      environment:
+        CLOUDFLARE_API_TOKEN: "{{ cloudflare_api_token }}"
       notify: reload caddy
 
   handlers:
