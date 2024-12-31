@@ -12,4 +12,4 @@ jobs:
             - name: Run Ansible Playbook
               working-directory: ansible
               run: |
-                  sudo su - ansible -c "ansible-playbook deploy-caddy.yml -i inventory.ini -vvv"
+                  ansible-playbook deploy-caddy.yml -i inventory.ini -vvv
