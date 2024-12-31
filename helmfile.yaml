@@ -33,9 +33,6 @@ releases:
     version: v1.15.1
     values:
       - cert-manager.yaml
-  - name: demo
-    namespace: default
-    chart: ./demo-app
   - name: letsencrypt-staging
     chart: ./lets-encrypt/staging
   - name: letsencrypt-prod

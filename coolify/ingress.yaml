@@ -7,10 +7,6 @@ metadata:
     external-dns.alpha.kubernetes.io/target: home.rossreicks.com
 spec:
   ingressClassName: nginx
-  tls:
-  - hosts:
-    - coolify.rossreicks.com
-    secretName: wildcard-cert-prod-tls
   rules:
     - host: coolify.rossreicks.com
       http:

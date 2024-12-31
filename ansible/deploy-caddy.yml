@@ -3,25 +3,10 @@
   vars_files:
     - vars.yml
   tasks:
-    - name: Get Ingress information from specific namespaces
-      kubernetes.core.k8s_info:
-        kubeconfig: "~{{ansible_user}}/.kube/config"
-        api_version: networking.k8s.io/v1
-        kind: Ingress
-        namespace: "{{ item }}" # Iterate over namespaces
-      loop: "{{ namespaces }}"
-      register: namespace_ingresses
-
-    - name: Flatten the list of ingresses
-      set_fact:
-        ingresses: "{{ namespace_ingresses.results | map(attribute='resources') | flatten }}"
-
     - name: Template Caddyfile
       template:
         src: caddyfile.j2
         dest: /etc/caddy/Caddyfile
-      vars:
-        ingresses: "{{ ingresses.resources }}"
       environment:
         CLOUDFLARE_API_TOKEN: "{{ cloudflare_api_token }}"
       notify: reload caddy

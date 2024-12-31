@@ -2,20 +2,11 @@
     email {{ caddy_email }}
 }
 
-{% for ingress in ingresses %}
-{% for rule in ingress.spec.rules %}
-{% if rule.host %}
-https://{{ rule.host }} {
+{% for domain in domains %}
+https://{{ domain.name }} {
     tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
-    reverse_proxy 192.168.80.80:80 { # Proxy to the hostname defined in the Ingress
-        header_up Host {host} # Crucial for host-based routing
-        header_up X-Forwarded-Proto https
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-    }
+    reverse_proxy {{ domain.backend }}
 }
-{% endif %}
-{% endfor %}
 {% endfor %}
