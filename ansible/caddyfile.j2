@@ -5,13 +5,14 @@
 {% for ingress in ingresses %}
 {% for rule in ingress.spec.rules %}
 {% if rule.host %}
-{{ rule.host }} {
-  reverse_proxy http://{{ rule.host }} {
-    # Optional: Set the upstream connect timeout
-    # timeout 10s
-    # Optional: Set headers
-    #header_up Host {host}
-  }
+https://{{ rule.host }} {
+    tls {{ caddy_email }}
+    reverse_proxy http://{{ rule.host }} { # Proxy to the hostname defined in the Ingress
+        header_up Host {host} # Crucial for host-based routing
+        header_up X-Forwarded-Proto https
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+    }
 }
 {% endif %}
 {% endfor %}
