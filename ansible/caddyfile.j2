@@ -1,0 +1,18 @@
+{
+    email {{ caddy_email }}
+}
+
+{% for ingress in ingresses %}
+{% for rule in ingress.spec.rules %}
+{% if rule.host %}
+{{ rule.host }} {
+  reverse_proxy http://{{ rule.host }} {
+    # Optional: Set the upstream connect timeout
+    # timeout 10s
+    # Optional: Set headers
+    #header_up Host {host}
+  }
+}
+{% endif %}
+{% endfor %}
+{% endfor %}

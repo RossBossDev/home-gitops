@@ -8,10 +8,10 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: 10000m
 spec:
   ingressClassName: nginx
-  tls:
-  - hosts:
-    - radarr.rossreicks.com
-    secretName: wildcard-cert-prod-tls
+  # tls:
+  # - hosts:
+  #   - radarr.rossreicks.com
+  #   secretName: wildcard-cert-prod-tls
   rules:
     - host: radarr.rossreicks.com
       http:
