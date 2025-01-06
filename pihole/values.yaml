@@ -6,6 +6,8 @@ ingress:
   hosts:
     - pihole.rossreicks.com
   ingressClassName: nginx
+  tls:
+    disable: true
 
 serviceDns:
   type: LoadBalancer
