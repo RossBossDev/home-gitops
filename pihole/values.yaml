@@ -3,10 +3,6 @@ ingress:
   annotations:
       external-dns.alpha.kubernetes.io/hostname: pihole.rossreicks.com
       external-dns.alpha.kubernetes.io/target: home.rossreicks.com
-  tls:
-    - secretName: wildcard-cert-prod-tls
-      hosts:
-        - pihole.rossreicks.com
   hosts:
     - pihole.rossreicks.com
   ingressClassName: nginx

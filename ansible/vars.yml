@@ -32,3 +32,5 @@ domains:
     backend: 192.168.80.80:6379
   - name: longhorn.local.rossreicks.com
     backend: 192.168.80.80:80
+  - name: pihole.rossreicks.com
+    backend: 192.168.80.82:80
