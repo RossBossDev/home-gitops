@@ -88,3 +88,5 @@ releases:
     chart: ./cloudflare-ddns
   - name: automatisch
     chart: ./automatisch
+  - name: redis
+    chart: ./redis

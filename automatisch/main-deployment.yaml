@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: automatisch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: automatisch
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: automatisch
+    spec:
+      containers:
+        - name: automatisch
+          env:
+            - name: HOST
+              value: "localhost"
+            - name: PROTOCOL
+              value: "http"
+            - name: PORT
+              value: "3000"
+            - name: APP_ENV
+              value: "production"
+            - name: REDIS_HOST
+              value: "redis.local.rossreicks.com"
+            - name: POSTGRES_HOST
+              value: "postgres.local.rossreicks.com"
+            - name: POSTGRES_DATABASE
+              value: "automatisch"
+            - name: POSTGRES_USERNAME
+              value: "automatisch_user"
+            - name: POSTGRES_PASSWORD
+              value: "automatisch_pass"
+          envFrom:
+            - secretRef:
+                name: automatisch-secrets
+          image: automatischio/automatisch:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - name: automatisch-data
+              mountPath: /automatisch/storage
+      volumes:
+        - name: automatisch-data
+          persistentVolumeClaim:
+            claimName: automatisch-data-claim
+      restartPolicy: Always
