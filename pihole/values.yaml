@@ -1,13 +1,7 @@
 ingress:
   enabled: true
-  annotations:
-      external-dns.alpha.kubernetes.io/hostname: pihole.rossreicks.com
-      external-dns.alpha.kubernetes.io/target: home.rossreicks.com
   hosts:
-    - pihole.rossreicks.com
-  ingressClassName: nginx
-  tls:
-    disable: true
+    - pihole.local.rossreicks.com
 
 serviceDns:
   type: LoadBalancer
@@ -17,15 +11,17 @@ serviceDns:
 
 persistentVolumeClaim:
   enabled: true
+  storageClass: "longhorn"
 
 serviceWeb:
+  loadBalancerIP: 192.168.80.82
   type: ClusterIP
 
 podDnsConfig:
   enabled: true
   policy: "None"
   nameservers:
-  - 127.0.0.1
+  - 192.168.1.1
   - 1.1.1.1
 
 admin:
