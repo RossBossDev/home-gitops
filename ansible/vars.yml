@@ -30,5 +30,5 @@ domains:
     backend: 192.168.1.75:5432
   - name: redis.local.rossreicks.com # local traffic isnt routed through cloudflare
     backend: 192.168.80.80:6379
-  - name: longhorn.rossreicks.com
+  - name: longhorn.local.rossreicks.com
     backend: 192.168.80.80:80
