@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: automatisch
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: automate.rossreicks.com
+    external-dns.alpha.kubernetes.io/target: home.rossreicks.com
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: automate.rossreicks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: automatisch
+                port:
+                  number: 80

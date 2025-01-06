@@ -24,3 +24,5 @@ domains:
     backend: 192.168.1.187:8123
   - name: wordle.rossboss.dev
     backend: 192.168.80.80:80
+  - name: automate.rossreicks.com
+    backend: 192.168.80.80:80

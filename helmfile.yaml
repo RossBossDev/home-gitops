@@ -86,3 +86,5 @@ releases:
     chart: ./coolify
   - name: cloudflare-ddns
     chart: ./cloudflare-ddns
+  - name: automatisch
+    chart: ./automatisch
