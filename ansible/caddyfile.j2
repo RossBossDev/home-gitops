@@ -2,6 +2,16 @@
     email {{ caddy_email }}
 }
 
+{
+    match {
+        hosts "*.local.rossreicks.com"
+        not {
+            remote_ip 192.168.0.0/16
+        }
+    }
+    respond 403 Forbidden
+}
+
 {% for domain in domains %}
 https://{{ domain.name }} {
     tls {
