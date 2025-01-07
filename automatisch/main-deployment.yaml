@@ -18,7 +18,7 @@ spec:
         - name: automatisch
           env:
             - name: HOST
-              value: "localhost"
+              value: "automate.rossreicks.com"
             - name: PROTOCOL
               value: "http"
             - name: PORT
@@ -26,7 +26,9 @@ spec:
             - name: APP_ENV
               value: "production"
             - name: REDIS_HOST
-              value: "redis.local.rossreicks.com"
+              value: "redis.default.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
             - name: POSTGRES_HOST
               value: "postgres.local.rossreicks.com"
             - name: POSTGRES_DATABASE

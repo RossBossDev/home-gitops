@@ -18,7 +18,7 @@ spec:
         - name: automatisch-worker
           env:
             - name: HOST
-              value: "localhost"
+              value: "automate.rossreicks.com"
             - name: PROTOCOL
               value: "http"
             - name: PORT
@@ -26,13 +26,17 @@ spec:
             - name: APP_ENV
               value: "production"
             - name: REDIS_HOST
-              value: "redis"
+              value: "redis.default.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
             - name: POSTGRES_HOST
-              value: "postgres"
+              value: "postgres.local.rossreicks.com"
             - name: POSTGRES_DATABASE
               value: "automatisch"
             - name: POSTGRES_USERNAME
               value: "automatisch_user"
+            - name: POSTGRES_PASSWORD
+              value: "automatisch_pass"
             - name: WORKER
               value: "true"
           envFrom:
