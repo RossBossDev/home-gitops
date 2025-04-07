@@ -90,3 +90,6 @@ releases:
     chart: ./automatisch
   - name: redis
     chart: ./redis
+  - name: sabnzbd
+    chart: ./arr-stack/sabnzbd
+    namespace: arr-stack

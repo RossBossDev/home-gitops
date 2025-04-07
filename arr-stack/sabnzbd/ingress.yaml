@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sabnzbd-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: sabnzbd.rossreicks.com
+    external-dns.alpha.kubernetes.io/target: home.rossreicks.com
+    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: sabnzbd.rossreicks.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sabnzbd-kube
+                port:
+                  number: 8080
