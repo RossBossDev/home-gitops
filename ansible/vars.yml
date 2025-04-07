@@ -26,8 +26,6 @@ domains:
     backend: 192.168.80.80:80
   - name: automate.rossreicks.com
     backend: 192.168.80.80:80
-  - name: postgres.local.rossreicks.com # local traffic isnt routed through cloudflare
-    backend: 192.168.1.75:5432
   - name: longhorn.local.rossreicks.com
     backend: 192.168.80.80:80
   - name: pihole.local.rossreicks.com
