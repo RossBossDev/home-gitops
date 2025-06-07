@@ -40,15 +40,20 @@ services:
     command: --cleanup --interval 86400
     restart: unless-stopped
 
-  # restic:
-  #   container_name: restic
-  #   image: restic/restic
-  #   environment:
-  #     - RESTIC_REPOSITORY=/data/backup
-  #     - RESTIC_PASSWORD=your_restic_password
-  #     # add AWS or Backblaze credentials here if needed
-  #   volumes:
-  #     - /config:/config:ro
-  #     - /backups:/data
-  #   entrypoint: /bin/sh  # prevent it from running immediately; run manually with `docker exec`
-  #   restart: unless-stopped
+  # backup ui
+  backrest:
+      image: garethgeorge/backrest:latest
+      container_name: backrest
+      volumes:
+        - /config/backrest/data:/data
+        - /config/backrest/config:/config
+        - /config/backrest/cache:/cache
+        - /datapool/backups/repos:/repos
+      environment:
+        - BACKREST_DATA=/data # path for backrest data. restic binary and the database are placed here.
+        - BACKREST_CONFIG=/config/config.json # path for the backrest config file.
+        - XDG_CACHE_HOME=/cache # path for the restic cache which greatly improves performance.
+        - TZ=America/Chicago # set the timezone for the container, used as the timezone for cron jobs.
+      restart: unless-stopped
+      ports:
+        - 9898:9898
