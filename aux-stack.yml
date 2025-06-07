@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    environment:
+      TZ: America/Chicago
+      WEBPASSWORD: ${PIHOLE_WEBPASSWORD}
+    volumes:
+      - /config/pihole/etc-pihole:/etc/pihole
+      - /config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8080:80"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+
+  cloudflare-ddns:
+    container_name: cloudflare-ddns
+    image: favonia/cloudflare-ddns:latest
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - DOMAINS=home.rossreicks.com
+      - PROXIED=false
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --interval 86400
+    restart: unless-stopped
+
+  # restic:
+  #   container_name: restic
+  #   image: restic/restic
+  #   environment:
+  #     - RESTIC_REPOSITORY=/data/backup
+  #     - RESTIC_PASSWORD=your_restic_password
+  #     # add AWS or Backblaze credentials here if needed
+  #   volumes:
+  #     - /config:/config:ro
+  #     - /backups:/data
+  #   entrypoint: /bin/sh  # prevent it from running immediately; run manually with `docker exec`
+  #   restart: unless-stopped
