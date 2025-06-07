@@ -70,7 +70,7 @@ services:
             - /config/nzbget:/config
             - /datapool/media/downloads:/downloads
         ports:
-            - 8888:9696 # conflicts with prowlarr
+            - 6789:6789 # conflicts with prowlarr
         restart: unless-stopped
 # networks:
 #     web:
