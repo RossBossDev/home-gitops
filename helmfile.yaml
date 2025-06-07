@@ -73,23 +73,23 @@ releases:
   - name: overseerr
     chart: ./arr-stack/overseerr
     namespace: arr-stack
-  - name: mongodb
-    chart: ./mongodb
-    namespace: mongodb
-  - name: main-api
-    chart: ./main-api
-    namespace: default
-  - name: bazarr
-    chart: ./arr-stack/bazarr
-    namespace: arr-stack
-  - name: coolify
-    chart: ./coolify
+  # - name: mongodb
+  #   chart: ./mongodb
+  #   namespace: mongodb
+  # - name: main-api
+  #   chart: ./main-api
+  #   namespace: default
+  # - name: bazarr
+  #   chart: ./arr-stack/bazarr
+  #   namespace: arr-stack
+  # - name: coolify
+  #   chart: ./coolify
   - name: cloudflare-ddns
     chart: ./cloudflare-ddns
   - name: automatisch
     chart: ./automatisch
-  - name: redis
-    chart: ./redis
-  - name: sabnzbd
-    chart: ./arr-stack/sabnzbd
-    namespace: arr-stack
+  # - name: redis
+  #   chart: ./redis
+  # - name: sabnzbd
+  #   chart: ./arr-stack/sabnzbd
+  #   namespace: arr-stack
