@@ -66,6 +66,8 @@ services:
             - PUID=1000
             - PGID=1000
             - TZ=America/Chicago
+            - NZBGET_USER=${NZBGET_USER}
+            - NZBGET_PASS=${NZBGET_PASS}
         volumes:
             - /config/nzbget:/config
             - /datapool/media/downloads:/downloads
