@@ -6,7 +6,9 @@ services:
     image: pihole/pihole:latest
     environment:
       TZ: America/Chicago
-      WEBPASSWORD: ${PIHOLE_WEBPASSWORD}
+      FTLCONF_webserver_api_password: ${PIHOLE_WEBPASSWORD}
+      # If using Docker's default `bridge` network setting the dns listening mode should be set to 'all'
+      FTLCONF_dns_listeningMode: 'all'
     volumes:
       - /config/pihole/etc-pihole:/etc/pihole
       - /config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
