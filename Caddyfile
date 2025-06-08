@@ -16,6 +16,7 @@
     handle {
         forward_auth http://192.168.1.26:4180 {
             uri /oauth2/auth
+            copy_headers Authorization
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-Proto https
 
@@ -25,9 +26,7 @@
             }
         }
 
-        reverse_proxy {args.0} {
-            header_up Authorization {http.request.header.Authorization}
-        }
+        reverse_proxy {args.0}
     }
 }
 
