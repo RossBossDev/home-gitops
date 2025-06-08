@@ -17,6 +17,7 @@
         forward_auth http://192.168.1.26:4180 {
             uri /oauth2/auth
             header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto https
 
             @error status 401
             handle_response @error {
@@ -28,10 +29,6 @@
             header_up Authorization {http.request.header.Authorization}
         }
     }
-}
-
-https://auth.rossreicks.com {
-    reverse_proxy http://192.168.1.26:4180
 }
 
 https://radarr.rossreicks.com {
