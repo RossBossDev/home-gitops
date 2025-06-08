@@ -4,21 +4,19 @@
 }
 
 (auth) {
-    @oauth2 path /oauth2/*
+    @no_auth_api path /api*
+    handle /oauth2/* {
+        reverse_proxy http://192.168.1.26:4180
+    }
 
-    handle @oauth2 {
-        reverse_proxy http://192.168.1.26:4180 {
-            header_up X-Real-IP {remote_host}
-            header_up X-Forwarded-Uri {uri}
-        }
+    handle @no_auth_api {
+        reverse_proxy {args.0}
     }
 
     handle {
         forward_auth http://192.168.1.26:4180 {
             uri /oauth2/auth
             copy_headers Authorization
-            header_up X-Real-IP {remote_host}
-            header_up X-Forwarded-Proto https
 
             @error status 401
             handle_response @error {
