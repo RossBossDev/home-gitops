@@ -28,6 +28,10 @@
     }
 }
 
+https://test.rossreicks.com {
+    import auth https://httpbin.org/headers
+}
+
 https://auth.rossreicks.com {
     reverse_proxy http://192.168.1.26:4180
 }
