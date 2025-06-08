@@ -6,7 +6,7 @@
 (auth) {
     @not_oauth {
         not {
-            path /oauth2/auth /oauth2/start /oauth2/callback /oauth2/sign_in /oauth2/sign_out
+            path /oauth2/auth /oauth2/start /oauth2/callback /oauth2/sign_in /oauth2/sign_out /login /favicon.ico
         }
     }
     route @not_oauth {
