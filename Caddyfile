@@ -4,15 +4,26 @@
 }
 
 (auth) {
-    @not_oauth {
-        not {
-            path /oauth2/auth /oauth2/start /oauth2/callback /oauth2/sign_in /oauth2/sign_out
+    handle /oauth2/* {
+        reverse_proxy https://auth.rossreicks.com {
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Uri {uri}
         }
     }
-    route @not_oauth {
+
+    handle {
         forward_auth https://auth.rossreicks.com {
             uri /oauth2/auth
-            copy_headers X-Auth-Request-User X-Auth-Request-Email
+            header_up X-Real-IP {remote_host}
+
+            @error status 401
+            handle_response @error {
+                redir * /oauth2/sign_in?rd={scheme}://{host}{uri}
+            }
+        }
+
+        reverse_proxy {args.0} {
+            header_up Authorization {http.request.header.Authorization}
         }
     }
 }
@@ -22,8 +33,7 @@ https://auth.rossreicks.com {
 }
 
 https://radarr.rossreicks.com {
-    import auth
-    reverse_proxy http://192.168.1.26:7878
+    import auth http://192.168.1.26:7878
 }
 https://sonarr.rossreicks.com {
     reverse_proxy http://192.168.1.26:8989
