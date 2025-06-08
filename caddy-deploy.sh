@@ -9,11 +9,11 @@ set -e
 
 CADDYFILE=/opt/caddy/Caddyfile
 
-echo "[1/3] Validating Caddyfile..."
-caddy validate --config "$CADDYFILE"
-
-echo "[2/3] Pulling latest changes (if any)..."
+echo "[1/3] Pulling latest changes (if any)..."
 cd /opt/caddy && git pull
+
+echo "[2/3] Validating Caddyfile..."
+caddy validate --config "$CADDYFILE"
 
 echo "[3/3] Restarting Caddy..."
 sudo systemctl restart caddy
