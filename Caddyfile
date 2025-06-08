@@ -3,11 +3,21 @@
     acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
+(auth) {
+    route {
+        forward_auth https://auth.rossreicks.com {
+            uri /oauth2/auth
+            copy_headers X-Auth-Request-User X-Auth-Request-Email
+        }
+    }
+}
+
 https://auth.rossreicks.com {
     reverse_proxy http://192.168.1.26:4180
 }
 
 https://radarr.rossreicks.com {
+    import auth
     reverse_proxy http://192.168.1.26:7878
 }
 https://sonarr.rossreicks.com {
