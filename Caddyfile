@@ -29,7 +29,7 @@
 }
 
 https://test.rossreicks.com {
-    import auth https://httpbin.org/headers
+    import auth https://httpbin.org
 }
 
 https://auth.rossreicks.com {
