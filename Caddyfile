@@ -14,16 +14,6 @@
     }
 
     handle {
-        forward_auth https://auth.rossreicks.com {
-            uri /oauth2/auth
-            header_up X-Real-IP {remote_host}
-
-            @error status 401
-            handle_response @error {
-                redir * /oauth2/sign_in?rd={scheme}://{host}{uri}
-            }
-        }
-
         reverse_proxy {args.0} {
             header_up Authorization {http.request.header.Authorization}
         }
