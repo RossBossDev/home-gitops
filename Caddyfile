@@ -4,7 +4,9 @@
 }
 
 (auth) {
-    handle /oauth2/* {
+    @oauth2 path /oauth2/*
+
+    handle @oauth2 {
         reverse_proxy https://auth.rossreicks.com {
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-Uri {uri}
