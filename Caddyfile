@@ -4,7 +4,8 @@
 }
 
 (auth) {
-    route {
+    @not_oauth path_not /oauth2/auth /oauth2/start /oauth2/callback /oauth2/sign_in /oauth2/sign_out
+    route @not_oauth {
         forward_auth https://auth.rossreicks.com {
             uri /oauth2/auth
             copy_headers X-Auth-Request-User X-Auth-Request-Email
