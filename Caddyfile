@@ -37,7 +37,7 @@ https://auth.rossreicks.com {
 }
 
 https://radarr.rossreicks.com {
-    import auth http://192.168.1.26:7878
+    reverse_proxy http://192.168.1.26:7878
 }
 https://sonarr.rossreicks.com {
     reverse_proxy http://192.168.1.26:8989
