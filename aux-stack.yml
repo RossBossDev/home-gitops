@@ -1,6 +1,24 @@
 version: "3.8"
 
 services:
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    container_name: oauth2-proxy
+    restart: unless-stopped
+    environment:
+      OAUTH2_PROXY_PROVIDER: google
+      OAUTH2_PROXY_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${OAUTH2_PROXY_CLIENT_SECRET}
+      OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET}
+      OAUTH2_PROXY_EMAIL_DOMAINS: ${OAUTH2_PROXY_EMAIL_DOMAINS}
+      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
+      OAUTH2_PROXY_UPSTREAMS: "http://dummy:4181" # not used but required
+      OAUTH2_PROXY_SET_BASIC_AUTH: "true"
+      OAUTH2_PROXY_BASIC_AUTH_USERNAME: ${OAUTH2_PROXY_BASIC_AUTH_USERNAME}
+      OAUTH2_PROXY_BASIC_AUTH_PASSWORD: ${OAUTH2_PROXY_BASIC_AUTH_PASSWORD}
+      OAUTH2_PROXY_COOKIE_SECURE: "false" # ssl is handled by caddy
+    ports:
+      - "4180:4180"
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
