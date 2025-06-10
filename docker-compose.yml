@@ -74,6 +74,21 @@ services:
             - 6767:6767
         restart: unless-stopped
 
+    unpackerr:
+        image: golift/unpackerr
+        container_name: unpackerr
+        volumes:
+            - /datapool/media/downloads:/downloads
+        restart: always
+        user: 1000:1000
+        environment:
+            - TZ=America/Chicago
+            - UN_LOG_FILE=/downloads/unpackerr.log
+            - UN_SONARR_0_URL=http://192.168.1.26:8989
+            - UN_SONARR_0_API_KEY=${SONARR_API_KEY}
+            - UN_RADARR_0_URL=http://192.168.1.26:7878
+            - UN_RADARR_0_API_KEY=${RADARR_API_KEY}
+
     nzbget:
         image: lscr.io/linuxserver/nzbget:latest
         container_name: nzbget
