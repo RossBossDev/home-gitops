@@ -45,7 +45,7 @@ https://prowlarr.rossreicks.com {
     import auth http://192.168.1.26:9696
 }
 https://bazarr.rossreicks.com {
-    reverse_proxy http://192.168.1.26:6767
+    import auth http://192.168.1.26:6767
 }
 https://download.rossreicks.com {
     reverse_proxy http://192.168.1.26:6789
