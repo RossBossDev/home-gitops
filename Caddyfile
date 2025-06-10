@@ -63,5 +63,5 @@ https://pihole.rossreicks.com {
 }
 
 https://plex.rossreicks.com {
-    import auth http://192.168.1.14:32400
+    reverse_proxy http://192.168.1.14:32400
 }
