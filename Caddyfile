@@ -4,7 +4,7 @@
 }
 
 (auth) {
-    @no_auth_api path /api*
+    @no_auth_api query apiKey=*
     handle /oauth2/* {
         reverse_proxy http://192.168.1.26:4180
     }
