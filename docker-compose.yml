@@ -135,7 +135,7 @@ services:
           - AUTH_USERNAME=${NZBGET_USER}
           - AUTH_PASSWORD=${NZBGET_PASS}
           - SESSION_DURATION=3600 # In seconds
-          - AUTH_BYPASS=false # DO NOT USE if you expose Posteria outside your local network
+          - AUTH_BYPASS=true # DO NOT USE if you expose Posteria outside your local network
 
           - IMAGES_PER_PAGE=24
           - MAX_FILE_SIZE=5242880 # In bytes
