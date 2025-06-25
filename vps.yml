@@ -9,6 +9,8 @@ services:
       - "443:443"
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - HS_IP=${HS_IP}
+      - PLEX_IP=${PLEX_IP}
     volumes:
       - ./VPS_Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
