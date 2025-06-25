@@ -111,5 +111,39 @@ services:
     networks:
       - internal
 
+  activepieces:
+    image: ghcr.io/activepieces/activepieces:0.64.0
+    container_name: activepieces
+    restart: unless-stopped
+    ## Enable the following line if you already use AP_EXECUTION_MODE with SANDBOXED or old activepieces, checking the breaking change documentation for more info.
+    ## privileged: true
+    ports:
+      - '9654:80'
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AP_ENGINE_EXECUTABLE_PATH=dist/packages/engine/main.js
+      - AP_API_KEY=${AP_API_KEY}
+      - AP_ENCRYPTION_KEY=${AP_ENCRYPTION_KEY}
+      - AP_JWT_SECRET=${AP_JWT_SECRET}
+      - AP_ENVIRONMENT=prod
+      - AP_FRONTEND_URL=https://activepieces.rossreicks.com
+      - AP_WEBHOOK_TIMEOUT_SECONDS=30
+      - AP_TRIGGER_DEFAULT_POLL_INTERVAL=5
+      - AP_POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - AP_POSTGRES_HOST=postgres
+      - AP_POSTGRES_PORT=5432
+      - AP_POSTGRES_USERNAME=${POSTGRES_USER}
+      - AP_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - AP_EXECUTION_MODE=UNSANDBOXED
+      - AP_REDIS_HOST=redis
+      - AP_REDIS_PORT=6379
+      - AP_FLOW_TIMEOUT_SECONDS=600
+      - AP_TELEMETRY_ENABLED=true
+      - AP_TEMPLATES_SOURCE_URL="https://cloud.activepieces.com/api/v1/flow-templates"
+    volumes:
+      - /config/activepieces:/usr/src/app/cache
+
 networks:
   internal:

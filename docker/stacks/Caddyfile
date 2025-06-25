@@ -47,6 +47,9 @@ https://plex.rossreicks.com {
 https://tautulli.rossreicks.com {
     reverse_proxy http://home-server:8181
 }
+https://activepieces.rossreicks.com {
+    reverse_proxy http://home-server:9654
+}
 
 # these are the services that are protected by oauth2_proxy
 https://radarr.rossreicks.com {
