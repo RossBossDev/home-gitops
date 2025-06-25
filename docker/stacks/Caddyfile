@@ -53,6 +53,9 @@ https://activepieces.rossreicks.com {
 https://backrest.rossreicks.com {
     reverse_proxy http://home-server:9898
 }
+https://grafana.rossreicks.com {
+    reverse_proxy http://home-server:3000
+}
 
 # these are the services that are protected by oauth2_proxy
 https://radarr.rossreicks.com {
