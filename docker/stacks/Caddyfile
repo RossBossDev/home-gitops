@@ -68,4 +68,7 @@ https://pihole.rossreicks.com {
 https://plex.rossreicks.com {
     reverse_proxy http://plexvm:32400
 }
+https://tautulli.rossreicks.com {
+    reverse_proxy http://home-server:8181
+}
 
