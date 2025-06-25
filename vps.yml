@@ -10,7 +10,7 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-      #- ./VPS_Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./VPS_Caddyfile:/etc/caddy/Caddyfile:ro
 volumes:
   caddy_data:
   caddy_config:
