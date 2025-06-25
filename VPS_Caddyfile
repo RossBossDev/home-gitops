@@ -30,7 +30,7 @@
 }
 
 https://rossboss.dev {
-  reverse_proxy 127.0.0.1:9000
+  reverse_proxy 172.18.0.1:9000
 }
 https://auth.rossreicks.com {
     reverse_proxy ${HS_IP}:4180
