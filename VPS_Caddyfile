@@ -1,5 +1,6 @@
 {
     email rreicks13@gmail.com
+    acme_ca https://acme-v02.api.letsencrypt.org/directory
     acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
