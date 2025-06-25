@@ -7,7 +7,7 @@
 (auth) {
     @no_auth_api path /api/*
     handle /oauth2/* {
-        reverse_proxy http://${HS_IP}:4180
+        reverse_proxy ${HS_IP}:4180
     }
 
     handle @no_auth_api {
@@ -15,7 +15,7 @@
     }
 
     handle {
-        forward_auth http://${HS_IP}:4180 {
+        forward_auth ${HS_IP}:4180 {
             uri /oauth2/auth
             copy_headers Authorization
 
@@ -30,42 +30,42 @@
 }
 
 https://rossboss.dev {
-  reverse_proxy http://127.0.0.1:9000
+  reverse_proxy 127.0.0.1:9000
 }
 https://auth.rossreicks.com {
-    reverse_proxy http://${HS_IP}:4180
+    reverse_proxy ${HS_IP}:4180
 }
 https://radarr.rossreicks.com {
-    import auth http://${HS_IP}:7878
+    import auth ${HS_IP}:7878
 }
 https://sonarr.rossreicks.com {
-    import auth http://${HS_IP}:8989
+    import auth ${HS_IP}:8989
 }
 https://overseerr.rossreicks.com {
-    reverse_proxy http://${HS_IP}:5055
+    reverse_proxy ${HS_IP}:5055
 }
 https://prowlarr.rossreicks.com {
-    import auth http://${HS_IP}:9696
+    import auth ${HS_IP}:9696
 }
 https://bazarr.rossreicks.com {
-    import auth http://${HS_IP}:6767
+    import auth ${HS_IP}:6767
 }
 https://download.rossreicks.com {
-    reverse_proxy http://${HS_IP}:6789
+    reverse_proxy ${HS_IP}:6789
 }
 https://nzb.rossreicks.com {
-    import auth http://${HS_IP}:6789
+    import auth ${HS_IP}:6789
 }
 https://server.rossreicks.com {
-    reverse_proxy http://${HS_IP}:9000
+    reverse_proxy ${HS_IP}:9000
 }
 # https://ha.rossreicks.com {
-#     reverse_proxy http://192.168.1.147:8123
+#     reverse_proxy 192.168.1.147:8123
 # }
 https://pihole.rossreicks.com {
-    reverse_proxy http://${HS_IP}:8080
+    reverse_proxy ${HS_IP}:8080
 }
 https://plex.rossreicks.com {
-    reverse_proxy http://${PLEX_IP}:32400
+    reverse_proxy ${PLEX_IP}:32400
 }
 
