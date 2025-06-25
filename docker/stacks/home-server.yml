@@ -86,3 +86,26 @@ services:
         - /config/lunalytics:/app/data
         - /config/lunalytics/logs:/app/logs
       restart: unless-stopped
+
+  postgres:
+    image: 'postgres:17'
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+    volumes:
+      - /config/postgres:/var/lib/postgresql/data
+    networks:
+      - internal
+  redis:
+    image: 'redis:7'
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - /config/redis:/data
+    networks:
+      - internal
+
+networks:
+  internal:
