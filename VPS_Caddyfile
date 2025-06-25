@@ -9,7 +9,7 @@ https://rossboss.dev {
 }
 
 https://download.rossreicks.com {
-    reverse_proxy http://192.168.1.26:6789
+    reverse_proxy http://100.119.252.3:6789
 }
 
 
