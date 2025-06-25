@@ -1,12 +1,13 @@
 {
     email rreicks13@gmail.com
+    acme_ca https://acme-v02.api.letsencrypt.org/directory
     acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
 (auth) {
     @no_auth_api path /api/*
     handle /oauth2/* {
-        reverse_proxy http://192.168.1.26:4180
+        reverse_proxy http://home-server:4180
     }
 
     handle @no_auth_api {
@@ -14,7 +15,7 @@
     }
 
     handle {
-        forward_auth http://192.168.1.26:4180 {
+        forward_auth http://home-server:4180 {
             uri /oauth2/auth
             copy_headers Authorization
 
@@ -28,41 +29,43 @@
     }
 }
 
-https://auth.rossreicks.com {
-    reverse_proxy http://192.168.1.26:4180
+https://rossboss.dev {
+  reverse_proxy 172.18.0.1:9000
 }
-
+https://auth.rossreicks.com {
+    reverse_proxy http://home-server:4180
+}
 https://radarr.rossreicks.com {
-    import auth http://192.168.1.26:7878
+    import auth http://home-server:7878
 }
 https://sonarr.rossreicks.com {
-    import auth http://192.168.1.26:8989
+    import auth http://home-server:8989
 }
 https://overseerr.rossreicks.com {
-    reverse_proxy http://192.168.1.26:5055
+    reverse_proxy http://home-server:5055
 }
 https://prowlarr.rossreicks.com {
-    import auth http://192.168.1.26:9696
+    import auth http://home-server:9696
 }
 https://bazarr.rossreicks.com {
-    import auth http://192.168.1.26:6767
+    import auth http://home-server:6767
 }
 https://download.rossreicks.com {
-    reverse_proxy http://192.168.1.26:6789
+    reverse_proxy http://home-server:6789
 }
 https://nzb.rossreicks.com {
-    import auth http://192.168.1.26:6789
+    import auth http://home-server:6789
 }
 https://server.rossreicks.com {
-    reverse_proxy http://192.168.1.26:9000
+    reverse_proxy http://home-server:9000
 }
 https://ha.rossreicks.com {
-    reverse_proxy http://192.168.1.147:8123
+    reverse_proxy http://homeassistant:8123
 }
 https://pihole.rossreicks.com {
-    reverse_proxy http://192.168.1.26:8080
+    reverse_proxy http://home-server:8080
+}
+https://plex.rossreicks.com {
+    reverse_proxy http://plexvm:32400
 }
 
-https://plex.rossreicks.com {
-    reverse_proxy http://192.168.1.14:32400
-}

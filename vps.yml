@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   caddy:
-    image:  ghcr.io/caddybuilds/caddy-cloudflare:latest
+    image: ghcr.io/caddybuilds/caddy-cloudflare:latest
     container_name: caddy
     restart: unless-stopped
     ports:
@@ -9,10 +9,8 @@ services:
       - "443:443"
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - HS_IP=${HS_IP}
-      - PLEX_IP=${PLEX_IP}
     volumes:
-      - ./VPS_Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
 volumes:
