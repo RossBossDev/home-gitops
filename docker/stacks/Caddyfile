@@ -54,7 +54,10 @@ https://nzb.rossreicks.com {
     import auth http://home-server:6789
 }
 https://ha.rossreicks.com {
-    import auth http://homeassistant:8123
+    # Workaround for Home Assistant service worker CSRF issues
+    @serviceworker path /service_worker.js
+    respond @serviceworker 404
+	import auth http://homeassistant:8123
 }
 https://pihole.rossreicks.com {
     reverse_proxy http://home-server:8080
