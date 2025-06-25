@@ -151,7 +151,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./prometheus:/etc/prometheus
+      - /config/prometheus:/etc/prometheus
     ports:
       - 9090:9090
 
