@@ -8,7 +8,7 @@ https://rossboss.dev {
   reverse_proxy http://5.183.9.59:9000
 }
 
-https://download.rossreicks.com {
+https://download.rossboss.dev {
     reverse_proxy http://100.119.252.3:6789
 }
 
