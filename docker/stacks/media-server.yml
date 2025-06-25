@@ -1,0 +1,153 @@
+version: "3.8"
+services:
+    overseerr:
+        image: lscr.io/linuxserver/overseerr:latest
+        container_name: overseerr
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=America/Chicago
+        volumes:
+            - /config/overseerr:/config
+        ports:
+            - 5055:5055
+        restart: unless-stopped
+
+    prowlarr:
+        image: lscr.io/linuxserver/prowlarr:latest
+        container_name: prowlarr
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=America/Chicago
+            - VERSION=docker
+        volumes:
+            - /config/prowlarr:/config
+        ports:
+            - 9696:9696
+        restart: unless-stopped
+
+    radarr:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=America/Chicago
+            - VERSION=docker
+        volumes:
+            - /config/radarr:/config
+            - /datapool/media/downloads:/downloads
+            - /datapool/media/media/movies:/movies
+        ports:
+            - 7878:7878
+        restart: unless-stopped
+
+    sonarr:
+        image: lscr.io/linuxserver/sonarr:latest
+        container_name: sonarr
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=America/Chicago
+            - VERSION=docker
+        volumes:
+            - /config/sonarr:/config
+            - /datapool/media/downloads:/downloads
+            - /datapool/media/media/tv:/tv
+        ports:
+            - 8989:8989
+        restart: unless-stopped
+
+    bazarr:
+        image: lscr.io/linuxserver/bazarr:latest
+        container_name: bazarr
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=America/Chicago
+        volumes:
+            - /config/bazarr:/config
+            - /datapool/media/media/movies:/movies
+            - /datapool/media/media/tv:/tv
+        ports:
+            - 6767:6767
+        restart: unless-stopped
+
+    unpackerr:
+        image: golift/unpackerr
+        container_name: unpackerr
+        volumes:
+            - /datapool/media/downloads:/downloads
+        restart: always
+        user: 1000:1000
+        environment:
+            - TZ=America/Chicago
+            - UN_LOG_FILE=/downloads/unpackerr.log
+            - UN_SONARR_0_URL=http://192.168.1.26:8989
+            - UN_SONARR_0_API_KEY=${SONARR_API_KEY}
+            - UN_RADARR_0_URL=http://192.168.1.26:7878
+            - UN_RADARR_0_API_KEY=${RADARR_API_KEY}
+
+    nzbget:
+        image: lscr.io/linuxserver/nzbget:latest
+        container_name: nzbget
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=America/Chicago
+            - NZBGET_USER=${NZBGET_USER}
+            - NZBGET_PASS=${NZBGET_PASS}
+        volumes:
+            - /config/nzbget:/config
+            - /datapool/media/downloads:/downloads
+        ports:
+            - 6789:6789 # conflicts with prowlarr
+        restart: unless-stopped
+
+    mkvpriority:
+        image: ghcr.io/kennethsible/mkvpriority
+        container_name: mkvpriority
+        user: 1000:1000
+        volumes:
+            - /datapool/media/media:/media
+            - /config/mkvpriority:/config
+        restart: unless-stopped
+
+    posteria:
+        image: bozodev/posteria:latest
+        container_name: posteria
+        ports:
+          - "1818:80"
+        environment:
+          - SITE_TITLE=Posteria
+
+          - AUTH_USERNAME=${NZBGET_USER}
+          - AUTH_PASSWORD=${NZBGET_PASS}
+          - SESSION_DURATION=3600 # In seconds
+          - AUTH_BYPASS=false # DO NOT USE if you expose Posteria outside your local network
+
+          - IMAGES_PER_PAGE=24
+          - MAX_FILE_SIZE=5242880 # In bytes
+
+          - PLEX_SERVER_URL=http://192.168.1.14:32400
+          - PLEX_TOKEN=${PLEX_TOKEN}
+          - PLEX_REMOVE_OVERLAY_LABEL=true
+
+          - IGNORE_ARTICLES_IN_SORT=true # Set to false to sort with articles (A, An, The) included
+          - SORT_BY_DATE_ADDED=true
+
+          - AUTO_IMPORT_ENABLED=false # Enable/disable auto-import
+          - AUTO_IMPORT_SCHEDULE=1h # Schedule 24h, 12h, 6h, 3h, 1h
+          - AUTO_IMPORT_MOVIES=false # Import Movie posters
+          - AUTO_IMPORT_SHOWS=false # Import TV Show posters
+          - AUTO_IMPORT_SEASONS=false # Import TV season posters
+          - AUTO_IMPORT_COLLECTIONS=false # Import Collection posters
+        volumes:
+          - /datapool/media/posters:/var/www/html/posters
+          - /config/posteria:/var/www/html/data # Logs are found here
+        restart: unless-stopped
+
+# networks:
+#     web:
+#     internal: # used for things not exposed to the internet

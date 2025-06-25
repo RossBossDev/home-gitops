@@ -1,163 +1,88 @@
 version: "3.8"
+
 services:
-    overseerr:
-        image: lscr.io/linuxserver/overseerr:latest
-        container_name: overseerr
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/Chicago
-        volumes:
-            - /config/overseerr:/config
-        ports:
-            - 5055:5055
-        restart: unless-stopped
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    container_name: oauth2-proxy
+    restart: unless-stopped
+    environment:
+      OAUTH2_PROXY_PROVIDER: google
+      OAUTH2_PROXY_REVERSE_PROXY: true
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: true
+      OAUTH2_PROXY_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${OAUTH2_PROXY_CLIENT_SECRET}
+      OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET}
+      OAUTH2_PROXY_EMAIL_DOMAINS: ${OAUTH2_PROXY_EMAIL_DOMAINS}
+      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
+      OAUTH2_PROXY_UPSTREAMS: "http://dummy:4181" # not used but required
+      OAUTH2_PROXY_SET_BASIC_AUTH: "true"
+      OAUTH2_PROXY_BASIC_AUTH_PASSWORD: ${OAUTH2_PROXY_BASIC_AUTH_PASSWORD}
+      OAUTH2_PROXY_COOKIE_SECURE: "false" # ssl is handled by caddy
+    ports:
+      - "4180:4180"
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    environment:
+      TZ: America/Chicago
+      FTLCONF_webserver_api_password: ${PIHOLE_WEBPASSWORD}
+      # If using Docker's default `bridge` network setting the dns listening mode should be set to 'all'
+      FTLCONF_dns_listeningMode: 'all'
+    volumes:
+      - /config/pihole/etc-pihole:/etc/pihole
+      - /config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8080:80"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
 
-    prowlarr:
-        image: lscr.io/linuxserver/prowlarr:latest
-        container_name: prowlarr
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/Chicago
-            - VERSION=docker
-        volumes:
-            - /config/prowlarr:/config
-        ports:
-            - 9696:9696
-        restart: unless-stopped
+  cloudflare-ddns:
+    container_name: cloudflare-ddns
+    image: favonia/cloudflare-ddns:latest
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - DOMAINS=home.rossreicks.com
+      - PROXIED=false
+    restart: unless-stopped
 
-    radarr:
-        image: lscr.io/linuxserver/radarr:latest
-        container_name: radarr
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/Chicago
-            - VERSION=docker
-        volumes:
-            - /config/radarr:/config
-            - /datapool/media/downloads:/downloads
-            - /datapool/media/media/movies:/movies
-        ports:
-            - 7878:7878
-        restart: unless-stopped
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --interval 86400
+    restart: unless-stopped
 
-    sonarr:
-        image: lscr.io/linuxserver/sonarr:latest
-        container_name: sonarr
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/Chicago
-            - VERSION=docker
-        volumes:
-            - /config/sonarr:/config
-            - /datapool/media/downloads:/downloads
-            - /datapool/media/media/tv:/tv
-        ports:
-            - 8989:8989
-        restart: unless-stopped
+  # backup ui
+  backrest:
+      image: garethgeorge/backrest:latest
+      container_name: backrest
+      volumes:
+        - /config/backrest/data:/data
+        - /config/backrest/config:/config
+        - /config/backrest/cache:/cache
+        - /datapool/backups/repos:/repos
+      environment:
+        - BACKREST_DATA=/data # path for backrest data. restic binary and the database are placed here.
+        - BACKREST_CONFIG=/config/config.json # path for the backrest config file.
+        - XDG_CACHE_HOME=/cache # path for the restic cache which greatly improves performance.
+        - TZ=America/Chicago # set the timezone for the container, used as the timezone for cron jobs.
+      restart: unless-stopped
+      ports:
+        - 9898:9898
 
-    bazarr:
-        image: lscr.io/linuxserver/bazarr:latest
-        container_name: bazarr
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/Chicago
-        volumes:
-            - /config/bazarr:/config
-            - /datapool/media/media/movies:/movies
-            - /datapool/media/media/tv:/tv
-        ports:
-            - 6767:6767
-        restart: unless-stopped
-
-    unpackerr:
-        image: golift/unpackerr
-        container_name: unpackerr
-        volumes:
-            - /datapool/media/downloads:/downloads
-        restart: always
-        user: 1000:1000
-        environment:
-            - TZ=America/Chicago
-            - UN_LOG_FILE=/downloads/unpackerr.log
-            - UN_SONARR_0_URL=http://192.168.1.26:8989
-            - UN_SONARR_0_API_KEY=${SONARR_API_KEY}
-            - UN_RADARR_0_URL=http://192.168.1.26:7878
-            - UN_RADARR_0_API_KEY=${RADARR_API_KEY}
-
-    nzbget:
-        image: lscr.io/linuxserver/nzbget:latest
-        container_name: nzbget
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/Chicago
-            - NZBGET_USER=${NZBGET_USER}
-            - NZBGET_PASS=${NZBGET_PASS}
-        volumes:
-            - /config/nzbget:/config
-            - /datapool/media/downloads:/downloads
-        ports:
-            - 6789:6789 # conflicts with prowlarr
-        restart: unless-stopped
-
-    mkvpriority:
-        image: ghcr.io/kennethsible/mkvpriority
-        container_name: mkvpriority
-        user: 1000:1000
-        volumes:
-            - /datapool/media/media:/media
-            - /config/mkvpriority:/config
-        restart: unless-stopped
-
-    lunalytics:
-        image: ksjaay/lunalytics:latest
-        container_name: lunalytics
-        ports:
-          - 2308:2308
-        volumes:
-          - /config/lunalytics:/app/data
-          - /config/lunalytics/logs:/app/logs
-        restart: unless-stopped
-
-    posteria:
-        image: bozodev/posteria:latest
-        container_name: posteria
-        ports:
-          - "1818:80"
-        environment:
-          - SITE_TITLE=Posteria
-
-          - AUTH_USERNAME=${NZBGET_USER}
-          - AUTH_PASSWORD=${NZBGET_PASS}
-          - SESSION_DURATION=3600 # In seconds
-          - AUTH_BYPASS=false # DO NOT USE if you expose Posteria outside your local network
-
-          - IMAGES_PER_PAGE=24
-          - MAX_FILE_SIZE=5242880 # In bytes
-
-          - PLEX_SERVER_URL=http://192.168.1.14:32400
-          - PLEX_TOKEN=${PLEX_TOKEN}
-          - PLEX_REMOVE_OVERLAY_LABEL=true
-
-          - IGNORE_ARTICLES_IN_SORT=true # Set to false to sort with articles (A, An, The) included
-          - SORT_BY_DATE_ADDED=true
-
-          - AUTO_IMPORT_ENABLED=false # Enable/disable auto-import
-          - AUTO_IMPORT_SCHEDULE=1h # Schedule 24h, 12h, 6h, 3h, 1h
-          - AUTO_IMPORT_MOVIES=false # Import Movie posters
-          - AUTO_IMPORT_SHOWS=false # Import TV Show posters
-          - AUTO_IMPORT_SEASONS=false # Import TV season posters
-          - AUTO_IMPORT_COLLECTIONS=false # Import Collection posters
-        volumes:
-          - /datapool/media/posters:/var/www/html/posters
-          - /config/posteria:/var/www/html/data # Logs are found here
-        restart: unless-stopped
-
-# networks:
-#     web:
-#     internal: # used for things not exposed to the internet
+  lunalytics:
+      image: ksjaay/lunalytics:latest
+      container_name: lunalytics
+      ports:
+        - 2308:2308
+      volumes:
+        - /config/lunalytics:/app/data
+        - /config/lunalytics/logs:/app/logs
+      restart: unless-stopped
