@@ -42,14 +42,14 @@ services:
     cap_add:
       - NET_ADMIN
 
-  cloudflare-ddns:
-    container_name: cloudflare-ddns
-    image: favonia/cloudflare-ddns:latest
-    environment:
-      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - DOMAINS=home.rossreicks.com
-      - PROXIED=false
-    restart: unless-stopped
+  # cloudflare-ddns:
+  #   container_name: cloudflare-ddns
+  #   image: favonia/cloudflare-ddns:latest
+  #   environment:
+  #     - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+  #     - DOMAINS=home.rossreicks.com
+  #     - PROXIED=false
+  #   restart: unless-stopped
 
   watchtower:
     container_name: watchtower
