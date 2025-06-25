@@ -35,14 +35,25 @@ https://rossboss.dev {
 https://auth.rossreicks.com {
     reverse_proxy http://home-server:4180
 }
+https://overseerr.rossreicks.com {
+    reverse_proxy http://home-server:5055
+}
+https://pihole.rossreicks.com {
+    reverse_proxy http://home-server:8080
+}
+https://plex.rossreicks.com {
+    reverse_proxy http://plexvm:32400
+}
+https://tautulli.rossreicks.com {
+    reverse_proxy http://home-server:8181
+}
+
+# these are the services that are protected by oauth2_proxy
 https://radarr.rossreicks.com {
     import auth http://home-server:7878
 }
 https://sonarr.rossreicks.com {
     import auth http://home-server:8989
-}
-https://overseerr.rossreicks.com {
-    reverse_proxy http://home-server:5055
 }
 https://prowlarr.rossreicks.com {
     import auth http://home-server:9696
@@ -58,14 +69,5 @@ https://ha.rossreicks.com {
     @serviceworker path /service_worker.js
     respond @serviceworker 404
 	import auth http://homeassistant:8123
-}
-https://pihole.rossreicks.com {
-    reverse_proxy http://home-server:8080
-}
-https://plex.rossreicks.com {
-    reverse_proxy http://plexvm:32400
-}
-https://tautulli.rossreicks.com {
-    reverse_proxy http://home-server:8181
 }
 
