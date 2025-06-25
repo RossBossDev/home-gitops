@@ -8,9 +8,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./VPS_Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
-      - ./VPS_Caddyfile:/etc/caddy/Caddyfile:ro
 volumes:
   caddy_data:
   caddy_config:
