@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./VPS_Caddyfile:/etc/caddy/Caddyfile:ro
+volumes:
+  caddy_data:
+  caddy_config:
