@@ -17,7 +17,7 @@
     handle {
         forward_auth http://home-server:4180 {
             uri /oauth2/auth
-            copy_headers Authorization X-Forwarded-Preferred-Username
+            copy_headers Authorization X-Auth-Request-User X-Forwarded-Preferred-Username X-Forwarded-User
 
             @error status 401
             handle_response @error {
