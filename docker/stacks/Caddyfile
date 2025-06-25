@@ -5,7 +5,7 @@
 }
 
 (auth) {
-    @no_auth_api path /api/*
+    @no_auth_api path /api/* query access_token
     handle /oauth2/* {
         reverse_proxy http://home-server:4180
     }
@@ -25,12 +25,7 @@
             }
         }
 
-		reverse_proxy {args.0} {
-		  header_up Authorization {>Authorization}
-		  header_up X-Auth-Request-User {>X-Auth-Request-User}
-		  header_up X-Forwarded-Preferred-Username {>X-Forwarded-Preferred-Username}
-		  header_up X-Forwarded-User {>X-Forwarded-User}
-		}
+		reverse_proxy {args.0}
     }
 }
 
