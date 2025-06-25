@@ -50,17 +50,11 @@ https://prowlarr.rossreicks.com {
 https://bazarr.rossreicks.com {
     import auth http://home-server:6767
 }
-https://download.rossreicks.com {
-    reverse_proxy http://home-server:6789
-}
 https://nzb.rossreicks.com {
     import auth http://home-server:6789
 }
-https://server.rossreicks.com {
-    reverse_proxy http://home-server:9000
-}
 https://ha.rossreicks.com {
-    reverse_proxy http://homeassistant:8123
+    import auth http://homeassistant:8123
 }
 https://pihole.rossreicks.com {
     reverse_proxy http://home-server:8080
