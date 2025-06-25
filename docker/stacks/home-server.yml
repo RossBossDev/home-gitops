@@ -20,6 +20,7 @@ services:
       OAUTH2_PROXY_COOKIE_SECURE: "false" # ssl is handled by caddy
     ports:
       - "4180:4180"
+
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
