@@ -68,6 +68,7 @@ services:
       image: garethgeorge/backrest:latest
       container_name: backrest
       volumes:
+        - /config:/hostconfig
         - /config/backrest/data:/data
         - /config/backrest/config:/config
         - /config/backrest/cache:/cache
