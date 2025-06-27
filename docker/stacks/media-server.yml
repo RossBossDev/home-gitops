@@ -172,3 +172,17 @@ services:
       ports:
         - 6246:6246
       restart: unless-stopped
+
+    plex-recommendations:
+      image: silkychap/plex-recommendations-ai:latest
+      container_name: plex-recommendations
+      environment:
+        - PLEX_URL=http://plexvm:32400
+        - PLEX_TOKEN=${PLEX_TOKEN}
+        - OPEN_AI_KEY=${OPEN_AI_KEY}
+        - LIBRARY_NAME=Movies
+        - COLLECTION_TITLE=Recommended Movies
+        - HISTORY_AMOUNT=30
+        - RECOMMENDED_AMOUNT=20
+        - MINIMUM_AMOUNT=5
+      restart: unless-stopped
