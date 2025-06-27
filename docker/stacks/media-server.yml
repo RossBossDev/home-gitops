@@ -177,7 +177,7 @@ services:
       image: silkychap/plex-recommendations-ai:latest
       container_name: plex-recommendations
       environment:
-        - PLEX_URL=http://plexvm:32400
+        - PLEX_URL=https://plex.rossreicks.com
         - PLEX_TOKEN=${PLEX_TOKEN}
         - OPEN_AI_KEY=${OPEN_AI_KEY}
         - LIBRARY_NAME=Movies
