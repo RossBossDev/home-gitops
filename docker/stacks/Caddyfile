@@ -5,7 +5,7 @@
 }
 
 (auth) {
-    @no_auth_api path /api/* query access_token
+    @no_auth_api path /api/*
     handle /oauth2/* {
         reverse_proxy http://home-server:4180
     }
