@@ -148,12 +148,19 @@ services:
     networks:
       - internal
 
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+
   prometheus:
       image: prom/prometheus:latest
-      container_name: prometheus
+      command:
+        - --web.enable-remote-write-receiver
+        - --config.file=/etc/prometheus/prometheus.yml
       restart: unless-stopped
-      volumes:
-        - ./prometheus:/etc/prometheus
       ports:
         - 9090:9090
 
