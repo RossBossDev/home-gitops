@@ -291,23 +291,32 @@ Detailed documentation for all services in the home server infrastructure.
 
 ## Monitoring Services
 
-### Prometheus
-**Purpose**: Metrics collection and storage  
-**URL**: http://home-server:9090  
+### Grafana Alloy
+**Purpose**: Unified observability agent (replaces Prometheus + cAdvisor)  
+**URL**: http://home-server:12345  
 **Authentication**: Internal only  
-**Port**: 9090
+**Port**: 12345
 
 **Key Features**:
-- Time-series metrics database
-- PromQL query language
-- Alert manager integration
-- Service discovery
+- Unified metrics, logs, and traces collection
+- Built-in service discovery
+- Docker container monitoring
+- System metrics collection
+- Prometheus-compatible remote write
+- Configuration via River language
+
+**Configuration**:
+- Config file: `/etc/alloy/config.alloy`
+- Collects system metrics (CPU, memory, disk, network)
+- Monitors Docker containers and their metrics
+- Supports Grafana Cloud or local Grafana endpoints
+- Auto-discovers containers with Prometheus annotations
 
 **Monitored Targets**:
-- Prometheus itself
-- Container metrics via cAdvisor
-- System metrics
-- Application metrics
+- System metrics (replaces node_exporter)
+- Container metrics (replaces cAdvisor)
+- Docker service discovery
+- Custom application metrics
 
 ### Grafana
 **Purpose**: Metrics visualization and dashboards  
@@ -322,20 +331,14 @@ Detailed documentation for all services in the home server infrastructure.
 - User and team management
 
 **Data Sources**:
-- Prometheus: System and application metrics
+- Alloy metrics via Prometheus remote write
+- Direct connection to Alloy for real-time data
 - Custom dashboards for infrastructure monitoring
 
-### cAdvisor
-**Purpose**: Container performance metrics  
-**URL**: http://home-server:9080  
-**Authentication**: Internal only  
-**Port**: 9080
-
-**Key Features**:
-- Container resource usage monitoring
-- Real-time metrics collection
-- Historical data retention
-- Prometheus integration
+**Configuration**:
+- Default admin password configurable via `GRAFANA_ADMIN_PASSWORD`
+- Can connect to Grafana Cloud or use local storage
+- Pre-configured for Alloy metrics
 
 ## Automation Services
 
@@ -378,7 +381,7 @@ Caddy → External access to all services
 Tailscale → Inter-VM communication
 PostgreSQL → Activepieces
 Redis → Activepieces
-Prometheus → Grafana
+Alloy → Grafana (metrics)
 ```
 
 ### Media Stack Dependencies
@@ -403,8 +406,8 @@ Unpackerr → Radarr, Sonarr (post-processing)
 - **Security updates**: Host OS updates required
 
 ### Monitoring Health
-- **Grafana dashboards**: System and service health
-- **Prometheus alerts**: Critical service failures
+- **Grafana dashboards**: System and service health via Alloy
+- **Alloy UI**: Agent health and configuration status
 - **Tautulli**: Plex server health and usage
 - **Pi-hole**: DNS query statistics and blocking
 

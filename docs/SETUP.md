@@ -244,13 +244,14 @@ docker compose -f media-server.yml up -d
 ### 3. Configure Monitoring
 
 1. **Grafana** (https://grafana.rossreicks.com):
-   - Default login: admin/admin
-   - Add Prometheus data source: `http://prometheus:9090`
-   - Import dashboards for Docker monitoring
+   - Default login: admin/[GRAFANA_ADMIN_PASSWORD]
+   - Add Alloy data source if using Grafana Cloud remote write
+   - Import dashboards for Docker and system monitoring
 
-2. **Prometheus**:
-   - Verify targets are being scraped
-   - Add additional scrape configs as needed
+2. **Grafana Alloy**:
+   - Verify agent is running: http://home-server:12345
+   - Check configuration and target discovery
+   - Monitor metrics collection and remote write status
 
 ## Troubleshooting
 

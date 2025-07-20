@@ -148,32 +148,46 @@ services:
     networks:
       - internal
 
-  prometheus:
-    image: prom/prometheus:latest
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    hostname: home-server
+    restart: unless-stopped
     volumes:
-      - ./prometheus:/etc/prometheus
-    ports:
-      - 9090:9090
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    volumes:
+      - ./alloy:/etc/alloy
+      - /config/alloy:/var/lib/alloy/data
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
+      - /run:/run:ro
+      - /var/log:/var/log:ro
+      - /run/udev/data:/run/udev/data:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/:/var/lib/docker:ro
     ports:
-      - "9080:8080"
+      - "12345:12345"
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    environment:
+      - ALLOY_DEPLOY_MODE=docker
+    user: "0:0"  # Run as root to access Docker socket and system metrics
+    pid: host
+    privileged: true
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
       - /config/grafana:/var/lib/grafana
     user: "472:472"
-    depends_on:
-      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
 
 
 networks:

@@ -74,9 +74,8 @@ The setup consists of multiple VMs connected via Tailscale, with external access
 - **Activepieces**: Workflow automation platform
 
 ### Monitoring Stack
-- **Prometheus**: Metrics collection and storage
+- **Grafana Alloy**: Unified observability agent (replaces Prometheus + cAdvisor)
 - **Grafana**: Metrics visualization and dashboards
-- **cAdvisor**: Container performance metrics
 
 ### VPS Stack (`vps.yml`)
 - **Caddy**: Reverse proxy with automatic HTTPS and Cloudflare integration
@@ -134,6 +133,12 @@ NZBGET_PASS=your_nzbget_password
 AP_API_KEY=your_activepieces_api_key
 AP_ENCRYPTION_KEY=your_activepieces_encryption_key
 AP_JWT_SECRET=your_activepieces_jwt_secret
+
+# Monitoring (optional - for Grafana Cloud)
+GRAFANA_CLOUD_PROMETHEUS_URL=your_grafana_cloud_prometheus_url
+GRAFANA_CLOUD_PROMETHEUS_USER=your_grafana_cloud_user_id
+GRAFANA_CLOUD_API_KEY=your_grafana_cloud_api_key
+GRAFANA_ADMIN_PASSWORD=your_grafana_admin_password
 ```
 
 ### Deploy Services
@@ -168,7 +173,7 @@ Once deployed, services are accessible via:
 │   ├── media-server.yml     # Media automation stack
 │   ├── vps.yml             # VPS reverse proxy
 │   ├── Caddyfile           # Caddy configuration
-│   └── prometheus/         # Prometheus configuration
+│   └── alloy/              # Grafana Alloy configuration
 ├── old-kubernetes-cluster/ # Legacy Kubernetes setup (reference)
 └── .github/workflows/      # GitHub Actions (disabled)
 ```
@@ -186,7 +191,7 @@ docker compose -f <stack-file> up -d
 Backrest provides automated backup management. Access the UI at https://backrest.rossreicks.com
 
 ### Monitoring
-- **System Metrics**: Available in Grafana dashboards
+- **System Metrics**: Available in Grafana dashboards via Alloy
 - **Media Analytics**: Tautulli for Plex usage statistics
 - **Custom Analytics**: Lunalytics for additional insights
 

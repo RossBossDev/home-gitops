@@ -1,0 +1,134 @@
+// =============================================================================
+// GRAFANA ALLOY CONFIGURATION - STEP 1: BASIC SETUP
+// =============================================================================
+// This is a minimal Alloy configuration to get started with basic monitoring.
+// We'll build upon this step by step to understand each component.
+
+// =============================================================================
+// LOGGING CONFIGURATION
+// =============================================================================
+// This block configures how Alloy itself logs information.
+// - level: Controls verbosity (debug, info, warn, error)
+// - format: How log messages are formatted (logfmt is key=value pairs)
+logging {
+  level  = "info"          // Show informational messages and above
+  format = "logfmt"        // Use structured logging format
+}
+
+// =============================================================================
+// STEP 1: BASIC SYSTEM METRICS COLLECTION
+// =============================================================================
+// This exporter collects basic system metrics like CPU, memory, disk usage.
+// Think of this as the "health check" for your server hardware.
+
+prometheus.exporter.unix "system_metrics" {
+  // Set a custom instance name so we can identify this server in Grafana
+  // This will show up as instance="home-server" in your metrics
+  set_collectors = ["cpu", "meminfo", "filesystem", "netdev", "loadavg"]
+  
+  // Disable collectors we don't need right now to keep things simple
+  disable_collectors = [
+    "arp", "bcache", "bonding", "btrfs", "conntrack", "cpufreq", 
+    "diskstats", "drm", "edac", "entropy", "fibrechannel", "hwmon", 
+    "infiniband", "ipvs", "mdadm", "mountstats", "netclass", "netstat", 
+    "nfs", "nfsd", "nvme", "powersupplyclass", "pressure", "rapl", 
+    "schedstat", "sockstat", "softnet", "stat", "tapestats", "textfile", 
+    "thermal_zone", "time", "timex", "udp_queues", "uname", "vmstat", 
+    "xfs", "zfs"
+  ]
+  
+  // Include metrics about the exporter itself (how many metrics collected, etc.)
+  include_exporter_metrics = true
+}
+
+// =============================================================================
+// STEP 1: SCRAPE THE SYSTEM METRICS
+// =============================================================================
+// This block tells Alloy to collect the metrics from the unix exporter above.
+// It's like saying "go get the CPU, memory, disk data every 15 seconds"
+
+prometheus.scrape "system_metrics" {
+  // Use the targets from our unix exporter (this creates the connection)
+  targets = prometheus.exporter.unix.system_metrics.targets
+  
+  // Collect metrics every 15 seconds (adjust if you want more/less frequent data)
+  scrape_interval = "15s"
+  
+  // The path where metrics are exposed (standard Prometheus format)
+  metrics_path = "/metrics"
+  
+  // Send the collected metrics to our next step (the console output for now)
+  forward_to = [prometheus.relabel.add_labels.receiver]
+}
+
+// =============================================================================
+// STEP 1: ADD HELPFUL LABELS TO METRICS
+// =============================================================================
+// This block adds extra information to every metric to make them easier to find
+// and understand in Grafana. Labels are like tags that help organize data.
+
+prometheus.relabel "add_labels" {
+  // Send processed metrics to our final destination (console for now)
+  forward_to = [prometheus.remote_write.console_output.receiver]
+
+  // Add a consistent instance label to all metrics
+  // This helps when you have multiple servers - you'll see "home-server" in Grafana
+  rule {
+    source_labels = ["__address__"]     // Take the original address
+    target_label  = "instance"         // Create a new label called "instance" 
+    replacement   = "home-server"       // Set it to our server name
+  }
+  
+  // Add a job label to identify what type of monitoring this is
+  rule {
+    target_label = "job"               // Create a "job" label
+    replacement  = "system"            // Set it to "system" for system metrics
+  }
+}
+
+// =============================================================================
+// STEP 1: OUTPUT METRICS (CONSOLE FOR TESTING)
+// =============================================================================
+// For this first step, we'll output metrics to the console so you can see
+// what's being collected. Later we'll change this to send to Grafana.
+
+prometheus.remote_write "console_output" {
+  endpoint {
+    // This is a dummy endpoint - metrics will be visible in Alloy logs
+    url = "http://localhost:12345/api/v1/write"
+    
+    // Add some headers for identification
+    headers = {
+      "X-Alloy-Test" = "step1-system-metrics"
+    }
+    
+    // Configure how to handle failed sends (retry settings)
+    queue_config {
+      max_samples_per_send = 1000      // Send up to 1000 metrics at once
+      capacity = 10000                 // Buffer up to 10000 metrics
+      batch_send_deadline = "5s"       // Send batches every 5 seconds
+    }
+  }
+}
+
+// =============================================================================
+// WHAT TO EXPECT IN GRAFANA:
+// =============================================================================
+// After deploying this configuration, you should see:
+// 1. Basic system metrics in the Alloy UI at http://home-server:12345
+// 2. In the "Targets" section, you'll see the unix exporter target
+// 3. In the "Service Discovery" section, you'll see discovered targets
+// 4. Metrics include:
+//    - node_cpu_seconds_total (CPU usage)
+//    - node_memory_MemTotal_bytes (total memory)
+//    - node_memory_MemAvailable_bytes (available memory)
+//    - node_filesystem_size_bytes (disk size)
+//    - node_filesystem_free_bytes (free disk space)
+//    - node_load1, node_load5, node_load15 (system load)
+//    - node_network_receive_bytes_total (network received)
+//    - node_network_transmit_bytes_total (network transmitted)
+//
+// Next steps will add:
+// - Docker container monitoring
+// - Proper Grafana integration
+// - Service discovery for other applications
