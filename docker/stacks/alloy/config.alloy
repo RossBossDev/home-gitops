@@ -5,3 +5,9 @@ prometheus.scrape "scrape_metrics" {
   forward_to      = [prometheus.relabel.filter_metrics.receiver]
   scrape_interval = "10s"
 }
+
+prometheus.remote_write "metrics_service" {
+    endpoint {
+        url = "http://prometheus:9090/api/v1/write"
+    }
+}
