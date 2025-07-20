@@ -154,7 +154,7 @@ services:
     hostname: home-server
     restart: unless-stopped
     volumes:
-      - ./alloy:/etc/alloy
+      - ./alloy/config.alloy:/etc/alloy/config.alloy
       - /config/alloy:/var/lib/alloy/data
       - /:/rootfs:ro
       - /var/run:/var/run:ro
