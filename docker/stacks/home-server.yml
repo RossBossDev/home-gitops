@@ -148,6 +148,15 @@ services:
     networks:
       - internal
 
+  prometheus:
+      image: prom/prometheus:latest
+      container_name: prometheus
+      restart: unless-stopped
+      volumes:
+        - ./prometheus:/etc/prometheus
+      ports:
+        - 9090:9090
+
   alloy:
     image: grafana/alloy:latest
     container_name: alloy
