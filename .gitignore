@@ -1,2 +1,3 @@
 docker/stacks/config/
 docker/stacks/data/
+.env
