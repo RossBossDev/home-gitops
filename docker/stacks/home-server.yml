@@ -1,6 +1,5 @@
 version: "3.8"
 
-
 services:
   oauth2-proxy:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
@@ -185,34 +184,34 @@ services:
     depends_on:
       - cadvisor
 
-  alloy:
-    image: grafana/alloy:latest
-    container_name: alloy
-    hostname: home-server
-    restart: unless-stopped
-    volumes:
-      - ./alloy:/etc/alloy
-      - ${CONFIG_PATH}/alloy:/var/lib/alloy/data
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /run:/run:ro
-      - /var/log:/var/log:ro
-      - /run/udev/data:/run/udev/data:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    ports:
-      - "12345:12345"
-    command:
-      - run
-      - --server.http.listen-addr=0.0.0.0:12345
-      - --storage.path=/var/lib/alloy/data
-      - /etc/alloy/config.alloy
-    environment:
-      - ALLOY_DEPLOY_MODE=docker
-    user: "0:0"  # Run as root to access Docker socket and system metrics
-    pid: host
-    privileged: true
+  # alloy:
+  #   image: grafana/alloy:latest
+  #   container_name: alloy
+  #   hostname: home-server
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./alloy:/etc/alloy
+  #     - ${CONFIG_PATH}/alloy:/var/lib/alloy/data
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /run:/run:ro
+  #     - /var/log:/var/log:ro
+  #     - /run/udev/data:/run/udev/data:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   ports:
+  #     - "12345:12345"
+  #   command:
+  #     - run
+  #     - --server.http.listen-addr=0.0.0.0:12345
+  #     - --storage.path=/var/lib/alloy/data
+  #     - /etc/alloy/config.alloy
+    # environment:
+    #   - ALLOY_DEPLOY_MODE=docker
+    # user: "0:0"  # Run as root to access Docker socket and system metrics
+    # pid: host
+    # privileged: true
 
   grafana:
     image: grafana/grafana:latest
