@@ -1,5 +1,6 @@
 version: "3.8"
 
+
 services:
   oauth2-proxy:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
@@ -224,11 +225,6 @@ services:
     user: "472:472"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
-
-logging:
-  driver: loki
-  options:
-    loki-url: "http://host.docker.internal:3100/loki/api/v1/push"
 
 
 networks:
