@@ -88,3 +88,4 @@ prometheus.remote_write "metrics_hosted_prometheus" {
       }
    }
 }
+livedebugging{}
