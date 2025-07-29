@@ -29,15 +29,17 @@
 // Metrics recording with Prometheus
 prometheus.exporter.unix "local_system" { }
 
-prometheus.exporter.cadvisor "cadvisor" {
+prometheus.exporter.cadvisor "container_metrics" {
     docker_host = "unix:///var/run/docker.sock"
-
     storage_duration = "5m"
-  }
+}
 
 prometheus.scrape "scrape_metrics" {
-  targets         = [prometheus.exporter.unix.local_system.targets, prometheus.exporter.cadvisor.targets]
-  forward_to      = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
+  targets = [
+    prometheus.exporter.unix.local_system.targets,
+    prometheus.exporter.cadvisor.container_metrics.targets,
+  ]
+  forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
   scrape_interval = "10s"
 }
 
