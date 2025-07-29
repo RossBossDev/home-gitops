@@ -1,42 +1,54 @@
 // Logging with Loki
-local.file_match "local_files" {
-     path_targets = [{"__path__" = "/var/log/*.log"}]
-     sync_period = "5s"
-}
+// local.file_match "local_files" {
+//      path_targets = [{"__path__" = "/var/log/*.log"}]
+//      sync_period = "5s"
+// }
 
-loki.source.file "log_scrape" {
-    targets    = local.file_match.local_files.targets
-    forward_to = [loki.process.filter_logs.receiver]
-    tail_from_end = true
-}
+// loki.source.file "log_scrape" {
+//     targets    = local.file_match.local_files.targets
+//     forward_to = [loki.process.filter_logs.receiver]
+//     tail_from_end = true
+// }
 
-// this is an example of how you would filter out noisy logs
-loki.process "filter_logs" {
-    stage.drop {
-        source = ""
-        expression  = ".*Connection closed by authenticating user root"
-        drop_counter_reason = "noisy"
-      }
-    forward_to = [loki.write.grafana_loki.receiver]
-}
+// // this is an example of how you would filter out noisy logs
+// loki.process "filter_logs" {
+//     stage.drop {
+//         source = ""
+//         expression  = ".*Connection closed by authenticating user root"
+//         drop_counter_reason = "noisy"
+//       }
+//     forward_to = [loki.write.grafana_loki.receiver]
+// }
 
-loki.write "grafana_loki" {
-    endpoint {
-        url = "http://localhost:3100/loki/api/v1/push"
-    }
-}
+// loki.write "grafana_loki" {
+//     endpoint {
+//         url = "http://localhost:3100/loki/api/v1/push"
+//     }
+// }
 
 // Metrics recording with Prometheus
 prometheus.exporter.unix "local_system" { }
 
+prometheus.exporter.cadvisor "cadvisor" {
+    docker_host = "unix:///var/run/docker.sock"
+
+    storage_duration = "5m"
+  }
+
 prometheus.scrape "scrape_metrics" {
-  targets         = prometheus.exporter.unix.local_system.targets
-  forward_to      = [prometheus.relabel.filter_metrics.receiver]
+  targets         = [prometheus.exporter.unix.local_system.targets, prometheus.exporter.cadvisor.targets]
+  forward_to      = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
   scrape_interval = "10s"
 }
 
-prometheus.remote_write "metrics_service" {
-    endpoint {
-        url = "http://localhost:9090/api/v1/write"
-    }
+prometheus.remote_write "metrics_hosted_prometheus" {
+   endpoint {
+      name = "hosted-prometheus"
+      url  = "https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push"
+
+      basic_auth {
+        username = sys.env("GRAFANA_USERNAME")
+        password = sys.env("GRAFANA_PASSWORD")
+      }
+   }
 }
