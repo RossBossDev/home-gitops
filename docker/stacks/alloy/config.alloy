@@ -23,16 +23,14 @@ loki.source.docker "default" {
 
 loki.write "grafana_loki" {
     endpoint {
-        url = "https://prometheus-prod-56-prod-us-east-2.grafana.net/loki/api/v1/push"
+        url = "https://logs-prod-036.grafana.net/loki/api/v1/push"
 
         basic_auth {
-            username = sys.env("GRAFANA_USERNAME")
-            password = sys.env("GRAFANA_PASSWORD")
+            username = sys.env("LOKI_USERNAME")
+            password = sys.env("LOKI_PASSWORD")
         }
     }
 }
-
-
 
 // Metrics recording with Prometheus
 prometheus.exporter.unix "integrations_node_exporter" {
@@ -91,8 +89,8 @@ prometheus.remote_write "metrics_hosted_prometheus" {
       url  = "https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push"
 
       basic_auth {
-        username = sys.env("GRAFANA_USERNAME")
-        password = sys.env("GRAFANA_PASSWORD")
+        username = sys.env("PROMETHEUS_USERNAME")
+        password = sys.env("PROMETHEUS_PASSWORD")
       }
    }
 }

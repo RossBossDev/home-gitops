@@ -206,8 +206,10 @@ services:
       - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.alloy
     environment:
-      - GRAFANA_USERNAME=${GRAFANA_USERNAME}
-      - GRAFANA_PASSWORD=${GRAFANA_PASSWORD}
+      - PROMETHEUS_USERNAME=${PROMETHEUS_USERNAME}
+      - PROMETHEUS_PASSWORD=${PROMETHEUS_PASSWORD}
+      - LOKI_USERNAME=${LOKI_USERNAME}
+      - LOKI_PASSWORD=${LOKI_PASSWORD}
     user: "0:0"  # Run as root to access Docker socket and system metrics
     pid: host
     privileged: true
