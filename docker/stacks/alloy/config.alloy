@@ -35,10 +35,7 @@ prometheus.exporter.cadvisor "container_metrics" {
 }
 
 prometheus.scrape "scrape_metrics" {
-  targets = [
-    prometheus.exporter.unix.local_system.targets,
-    prometheus.exporter.cadvisor.container_metrics.targets,
-  ]
+  targets = prometheus.exporter.cadvisor.container_metrics.targets
   forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
   scrape_interval = "10s"
 }
