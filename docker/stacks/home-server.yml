@@ -205,6 +205,9 @@ services:
       - --server.http.listen-addr=0.0.0.0:12345
       # - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.alloy
+    environment:
+      - GRAFANA_USERNAME=${GRAFANA_USERNAME}
+      - GRAFANA_PASSWORD=${GRAFANA_PASSWORD}
     user: "0:0"  # Run as root to access Docker socket and system metrics
     pid: host
     privileged: true
