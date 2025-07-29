@@ -1,15 +1,9 @@
 version: "3.8"
 
-x-logging: &logging
-  driver: loki
-  options:
-    loki-url: "http://loki:3100/loki/api/v1/push"
-
 services:
     overseerr:
         image: lscr.io/linuxserver/overseerr:latest
         container_name: overseerr
-        <<: *logging
         environment:
             - PUID=1000
             - PGID=1000
@@ -23,7 +17,6 @@ services:
     prowlarr:
         image: lscr.io/linuxserver/prowlarr:latest
         container_name: prowlarr
-        <<: *logging
         environment:
             - PUID=1000
             - PGID=1000
@@ -38,7 +31,6 @@ services:
     radarr:
         image: lscr.io/linuxserver/radarr:latest
         container_name: radarr
-        <<: *logging
         environment:
             - PUID=1000
             - PGID=1000
@@ -55,7 +47,6 @@ services:
     sonarr:
         image: lscr.io/linuxserver/sonarr:latest
         container_name: sonarr
-        <<: *logging
         environment:
             - PUID=1000
             - PGID=1000
@@ -72,7 +63,6 @@ services:
     bazarr:
         image: lscr.io/linuxserver/bazarr:latest
         container_name: bazarr
-        <<: *logging
         environment:
             - PUID=1000
             - PGID=1000
@@ -88,7 +78,6 @@ services:
     unpackerr:
         image: golift/unpackerr
         container_name: unpackerr
-        <<: *logging
         volumes:
             - /datapool/media/downloads:/downloads
         restart: always
@@ -104,7 +93,6 @@ services:
     nzbget:
         image: lscr.io/linuxserver/nzbget:latest
         container_name: nzbget
-        <<: *logging
         environment:
             - PUID=1000
             - PGID=1000
@@ -122,7 +110,6 @@ services:
         image: ghcr.io/kennethsible/mkvpriority
         container_name: mkvpriority
         user: 1000:1000
-        <<: *logging
         volumes:
             - /datapool/media/media:/media
             - /config/mkvpriority:/config
@@ -131,7 +118,6 @@ services:
     posteria:
         image: bozodev/posteria:latest
         container_name: posteria
-        <<: *logging
         ports:
           - "1818:80"
         environment:
@@ -166,7 +152,6 @@ services:
     tautulli:
         image: lscr.io/linuxserver/tautulli:latest
         container_name: tautulli
-        <<: *logging
         ports:
             - 8181:8181
         environment:
@@ -181,7 +166,6 @@ services:
       image: ghcr.io/jorenn92/maintainerr:latest
       container_name: maintainerr
       user: 1000:1000
-      <<: *logging
       volumes:
         - /config/maintainerr:/opt/data
       environment:
@@ -193,7 +177,6 @@ services:
     plex-recommendations:
       image: silkychap/plex-recommendations-ai:latest
       container_name: plex-recommendations
-      <<: *logging
       environment:
         - PLEX_URL=https://plex.rossreicks.com
         - PLEX_TOKEN=${PLEX_TOKEN}
