@@ -189,7 +189,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./alloy:/etc/alloy
-      - ${CONFIG_PATH}/alloy:/var/lib/alloy/data
+      # - ${CONFIG_PATH}/alloy:/var/lib/alloy/data
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
@@ -203,25 +203,23 @@ services:
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
-      - --storage.path=/var/lib/alloy/data
+      # - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.alloy
-    environment:
-      - ALLOY_DEPLOY_MODE=docker
     user: "0:0"  # Run as root to access Docker socket and system metrics
     pid: host
     privileged: true
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - ${CONFIG_PATH}/grafana:/var/lib/grafana
-    user: "472:472"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ${CONFIG_PATH}/grafana:/var/lib/grafana
+  #   user: "472:472"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
 
 
 networks:
