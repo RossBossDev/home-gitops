@@ -162,17 +162,17 @@ services:
             - /config/tautulli:/config
         restart: unless-stopped
 
-    maintainerr:
-      image: ghcr.io/jorenn92/maintainerr:latest
-      container_name: maintainerr
-      user: 1000:1000
-      volumes:
-        - /config/maintainerr:/opt/data
-      environment:
-        - TZ=America/Chicago
-      ports:
-        - 6246:6246
-      restart: unless-stopped
+    # maintainerr:
+    #   image: ghcr.io/jorenn92/maintainerr:latest
+    #   container_name: maintainerr
+    #   user: 1000:1000
+    #   volumes:
+    #     - /config/maintainerr:/opt/data
+    #   environment:
+    #     - TZ=America/Chicago
+    #   ports:
+    #     - 6246:6246
+    #   restart: unless-stopped
 
     plex-recommendations:
       image: silkychap/plex-recommendations-ai:latest
