@@ -4,7 +4,7 @@ discovery.docker "linux" {
 }
 
 discovery.relabel "logs_integrations_docker" {
-    targets = []
+    targets = discovery.docker.linux.targets
 
     rule {
       source_labels = ["__meta_docker_container_name"]
