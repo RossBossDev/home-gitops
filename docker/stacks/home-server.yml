@@ -145,12 +145,15 @@ services:
     ports:
       - "5000:5000"
     environment:
-      OIDC_ENABLED: "true"
-      OIDC_DISPLAY_NAME: "Google"
-      OIDC_ISSUER_URL: "https://accounts.google.com"
-      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
-      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
-      OIDC_SCOPES: "openid email profile"
+        - ALLOW_NEW_ACCOUNTS=false
+        - DEBUG=true
+
+      # OIDC_ENABLED: "true"
+      # OIDC_DISPLAY_NAME: "Google"
+      # OIDC_ISSUER_URL: "https://accounts.google.com"
+      # OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      # OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      # OIDC_SCOPES: "openid email profile"
 
 networks:
   internal:
