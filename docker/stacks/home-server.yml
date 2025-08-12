@@ -141,8 +141,8 @@ services:
     image: "ghcr.io/jordan-dalby/bytestash:latest"
     container_name: bytestash
     restart: always
-    volumes:
-      - ${NAS_PATH}/bytestash:/data/snippets
+    # volumes:
+    #   - ${NAS_PATH}/bytestash:/data/snippets
     ports:
       - "5000:5000"
     environment:
