@@ -150,7 +150,7 @@ services:
         - DEBUG=true
         - OIDC_ENABLED=true
         - OIDC_DISPLAY_NAME=Google
-        - OIDC_ISSUER_URL=https://accounts.google.com
+        - OIDC_ISSUER_URL=https://accounts.google.com/.well-known/openid-configuration
         - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
         - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
         - OIDC_SCOPES=openid email profile
