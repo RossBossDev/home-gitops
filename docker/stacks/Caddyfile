@@ -80,3 +80,15 @@ https://ha.rossreicks.com {
 	import auth http://homeassistant:8123
 }
 
+https://deploy.rossreicks.com {
+	tls off
+    reverse_proxy http://dokploy:443
+}
+
+http://deploy.rossreicks.com {
+	tls off
+    reverse_proxy http://dokploy:80
+}
+
+
+
