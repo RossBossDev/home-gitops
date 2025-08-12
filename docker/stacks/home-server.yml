@@ -146,8 +146,8 @@ services:
     ports:
       - "5000:5000"
     environment:
-        - ALLOW_NEW_ACCOUNTS=false
-        - DEBUG=true
+        - DEBUG=false
+        - DISABLE_ACCOUNTS=true
 
       # OIDC_ENABLED: "true"
       # OIDC_DISPLAY_NAME: "Google"
