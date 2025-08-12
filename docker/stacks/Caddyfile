@@ -88,5 +88,9 @@ deploy.rossreicks.com {
 	}
 }
 
+https://snippets.rossreicks.com {
+    reverse_proxy home-server:5000
+}
+
 
 
