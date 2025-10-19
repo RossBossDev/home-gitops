@@ -138,6 +138,11 @@ services:
       - PROMETHEUS_PASSWORD=${PROMETHEUS_PASSWORD}
       - LOKI_USERNAME=${LOKI_USERNAME}
       - LOKI_PASSWORD=${LOKI_PASSWORD}
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - internal
 
   bytestash:
     image: "ghcr.io/jordan-dalby/bytestash:latest"
