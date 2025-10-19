@@ -8,11 +8,6 @@ prometheus.scrape "radarr" {
   forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
 }
 
-prometheus.scrape "overseerr" {
-  targets    = [{"__address__" = "host.docker.internal:9850"}]
-  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
-}
-
 prometheus.remote_write "metrics_local_prometheus" {
    endpoint {
       name = "local-prometheus"

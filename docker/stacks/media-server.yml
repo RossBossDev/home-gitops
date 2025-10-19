@@ -209,13 +209,3 @@ services:
       ports: ["9708:9708"]
       command: ["radarr"]
       restart: unless-stopped
-
-    overseerr-exporter:
-      image: ghcr.io/willfantom/overseerr-exporter:latest
-      container_name: overseerr-exporter
-      # Default listens on :9850
-      command:
-        - --overseerr.address=http://overseerr:5055
-        - --overseerr.api-key=${OVERSEERR_API_KEY}
-      ports: ["9850:9850"]
-      restart: unless-stopped
