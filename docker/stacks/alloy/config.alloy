@@ -36,8 +36,19 @@ prometheus.exporter.cadvisor "container_metrics" {
 
 prometheus.scrape "scrape_metrics" {
   targets = prometheus.exporter.cadvisor.container_metrics.targets
-  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+  forward_to = [prometheus.relabel.container_metrics.receiver]
   scrape_interval = "60s"  // Reduced from 10s to 60s to lower active series count
+}
+
+prometheus.relabel "container_metrics" {
+  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+
+  // Only keep essential container metrics: CPU, memory, and filesystem
+  rule {
+    source_labels = ["__name__"]
+    regex = "container_cpu_usage_seconds_total|container_memory_usage_bytes|container_memory_working_set_bytes|container_fs_usage_bytes|container_fs_limit_bytes|container_spec_memory_limit_bytes|container_spec_cpu_quota|container_spec_cpu_period"
+    action = "keep"
+  }
 }
 
 
