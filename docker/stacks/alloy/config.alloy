@@ -41,7 +41,7 @@ prometheus.scrape "scrape_metrics" {
 }
 
 prometheus.relabel "container_metrics" {
-  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+  forward_to = [prometheus.relabel.global_filter.receiver]
 
   // Only keep essential container metrics: CPU, memory, and filesystem
   rule {
@@ -91,7 +91,7 @@ forward_to = [prometheus.relabel.integrations_node_exporter.receiver]
 }
 
 prometheus.relabel "integrations_node_exporter" {
-forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+forward_to = [prometheus.relabel.global_filter.receiver]
 
 rule {
   source_labels = ["__name__"]
@@ -171,6 +171,39 @@ loki.write "local_loki" {
     endpoint {
         url = "http://loki:3100/loki/api/v1/push"
     }
+}
+
+// Global filter to drop all unwanted metrics before sending to Prometheus
+prometheus.relabel "global_filter" {
+  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+
+  // Drop all Go runtime metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "go_.*"
+    action = "drop"
+  }
+
+  // Drop all process metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "process_.*"
+    action = "drop"
+  }
+
+  // Drop all promhttp metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "promhttp_.*"
+    action = "drop"
+  }
+
+  // Drop all net_conntrack metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "net_conntrack_.*"
+    action = "drop"
+  }
 }
 
 prometheus.remote_write "metrics_local_prometheus" {
