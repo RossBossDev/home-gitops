@@ -169,8 +169,6 @@ services:
       - '--web.enable-lifecycle'
       - '--web.enable-admin-api'
       - '--web.enable-remote-write-receiver'
-      - '--storage.tsdb.allow-overlapping-blocks'
-      - '--storage.tsdb.out-of-order.time-window=30m'
     ports:
       - "9090:9090"
     volumes:
