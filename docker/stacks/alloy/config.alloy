@@ -25,7 +25,7 @@ loki.source.docker "default" {
     targets    = discovery.docker.linux.targets
     labels     = {"platform" = "docker"}
     relabel_rules = discovery.relabel.logs_integrations_docker.rules
-    forward_to = [loki.write.grafana_loki.receiver]
+    forward_to = [loki.write.local_loki.receiver]
 }
 
 // docker metrics
@@ -36,7 +36,7 @@ prometheus.exporter.cadvisor "container_metrics" {
 
 prometheus.scrape "scrape_metrics" {
   targets = prometheus.exporter.cadvisor.container_metrics.targets
-  forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
+  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
   scrape_interval = "60s"  // Reduced from 10s to 60s to lower active series count
 }
 
@@ -80,7 +80,7 @@ forward_to = [prometheus.relabel.integrations_node_exporter.receiver]
 }
 
 prometheus.relabel "integrations_node_exporter" {
-forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
+forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
 
 rule {
   source_labels = ["__name__"]
@@ -91,7 +91,7 @@ rule {
 }
 
 loki.relabel "integrations_node_exporter" {
-forward_to = [loki.write.grafana_loki.receiver]
+forward_to = [loki.write.local_loki.receiver]
 rule {
   target_label = "job"
   replacement  = "integrations/node_exporter"
@@ -156,25 +156,15 @@ loki.process "default" {
 }
 }
 
-loki.write "grafana_loki" {
+loki.write "local_loki" {
     endpoint {
-        url = "https://logs-prod-036.grafana.net/loki/api/v1/push"
-
-        basic_auth {
-            username = sys.env("LOKI_USERNAME")
-            password = sys.env("LOKI_PASSWORD")
-        }
+        url = "http://loki:3100/loki/api/v1/push"
     }
 }
 
-prometheus.remote_write "metrics_hosted_prometheus" {
+prometheus.remote_write "metrics_local_prometheus" {
    endpoint {
-      name = "hosted-prometheus"
-      url  = "https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push"
-
-      basic_auth {
-        username = sys.env("PROMETHEUS_USERNAME")
-        password = sys.env("PROMETHEUS_PASSWORD")
-      }
+      name = "local-prometheus"
+      url  = "http://prometheus:9090/api/v1/write"
    }
 }
