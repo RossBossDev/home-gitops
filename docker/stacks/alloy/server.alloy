@@ -1,0 +1,207 @@
+// docker logs
+discovery.docker "linux" {
+    host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "logs_integrations_docker" {
+    targets = discovery.docker.linux.targets
+
+    rule {
+      source_labels = ["__meta_docker_container_name"]
+      regex = "/(.*)"
+      target_label = "service_name"
+    }
+}
+
+loki.source.docker "default" {
+    host       = "unix:///var/run/docker.sock"
+    targets    = discovery.docker.linux.targets
+    labels     = {"platform" = "docker"}
+    relabel_rules = discovery.relabel.logs_integrations_docker.rules
+    forward_to = [loki.write.local_loki.receiver]
+}
+
+// docker metrics
+prometheus.exporter.cadvisor "container_metrics" {
+    docker_host = "unix:///var/run/docker.sock"
+    storage_duration = "5m"
+}
+
+prometheus.scrape "scrape_metrics" {
+  targets = prometheus.exporter.cadvisor.container_metrics.targets
+  forward_to = [prometheus.relabel.container_metrics.receiver]
+  scrape_interval = "60s"  // Reduced from 10s to 60s to lower active series count
+}
+
+prometheus.relabel "container_metrics" {
+  forward_to = [prometheus.relabel.global_filter.receiver]
+
+  // Only keep essential container metrics: CPU, memory, and filesystem
+  rule {
+    source_labels = ["__name__"]
+    regex = "container_cpu_usage_seconds_total|container_memory_usage_bytes|container_memory_working_set_bytes|container_fs_usage_bytes|container_fs_limit_bytes|container_spec_memory_limit_bytes|container_spec_cpu_quota|container_spec_cpu_period"
+    action = "keep"
+  }
+}
+
+
+// unix metrics
+discovery.relabel "integrations_node_exporter" {
+    targets = prometheus.exporter.unix.integrations_node_exporter.targets
+
+    rule {
+      target_label = "instance"
+      replacement  = constants.hostname
+    }
+
+    rule {
+      target_label = "job"
+      replacement = "integrations/node_exporter"
+    }
+  }
+
+  prometheus.exporter.unix "integrations_node_exporter" {
+    disable_collectors = ["ipvs", "btrfs", "infiniband", "xfs", "zfs"]
+
+    filesystem {
+      fs_types_exclude     = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|tmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+      mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+)($|/)"
+      mount_timeout        = "5s"
+    }
+
+    netclass {
+      ignored_devices = "^(veth.*|cali.*|[a-f0-9]{15})$"
+    }
+
+    netdev {
+      device_exclude = "^(veth.*|cali.*|[a-f0-9]{15})$"
+    }
+  }
+
+  prometheus.scrape "integrations_node_exporter" {
+    targets    = discovery.relabel.integrations_node_exporter.output
+    forward_to = [prometheus.relabel.integrations_node_exporter.receiver]
+  }
+
+  prometheus.relabel "integrations_node_exporter" {
+    forward_to = [prometheus.relabel.global_filter.receiver]
+
+    rule {
+      source_labels = ["__name__"]
+      // Only the essential metrics: disk space, memory, and CPU
+      regex         = "up|node_cpu_seconds_total|node_memory_MemAvailable_bytes|node_memory_MemTotal_bytes|node_filesystem_avail_bytes|node_filesystem_size_bytes"
+      action        = "keep"
+    }
+  }
+
+  loki.relabel "integrations_node_exporter" {
+    forward_to = [loki.write.local_loki.receiver]
+    rule {
+      target_label = "job"
+      replacement  = "integrations/node_exporter"
+    }
+    rule {
+      target_label = "instance"
+      replacement  = constants.hostname
+    }
+  }
+
+  journal_module "integrations_node_exporter" {
+    forward_to = [loki.relabel.integrations_node_exporter.receiver]
+  }
+
+  //JOURNAL
+  declare "journal_module" {
+    argument "forward_to" {
+        optional = false
+    }
+
+    loki.source.journal "default"  {
+        max_age       = "2h0m0s"  // Reduced from 12h to 2h to limit log volume
+        forward_to    = [loki.process.default.receiver]
+        relabel_rules = loki.relabel.default.rules
+    }
+
+    loki.relabel "default" {
+        // Filter out verbose system services to reduce log volume
+        rule {
+            source_labels = ["__journal__systemd_unit"]
+            regex = "(systemd-.*|NetworkManager.*|dbus.*|cron.*|rsyslog.*|logrotate.*)"
+            action = "drop"
+        }
+
+        // Only keep ERROR and WARNING level logs to reduce volume
+        rule {
+            source_labels = ["__journal_priority_keyword"]
+            regex = "(debug|info|notice)"
+            action = "drop"
+        }
+
+        rule {
+            source_labels = ["__journal__systemd_unit"]
+            target_label  = "unit"
+        }
+        rule {
+            source_labels = ["__journal__boot_id"]
+            target_label  = "boot_id"
+        }
+        rule {
+            source_labels = ["__journal__transport"]
+            target_label  = "transport"
+        }
+        rule {
+            source_labels = ["__journal_priority_keyword"]
+            target_label  = "level"
+        }
+        forward_to    = []
+    }
+    loki.process "default" {
+        forward_to    = argument.forward_to.value
+    }
+  }
+
+loki.write "local_loki" {
+    endpoint {
+        url = "http://localhost:3100/loki/api/v1/push"
+    }
+}
+
+// Global filter to drop all unwanted metrics before sending to Prometheus
+prometheus.relabel "global_filter" {
+  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+
+  // Drop all Go runtime metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "go_.*"
+    action = "drop"
+  }
+
+  // Drop all process metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "process_.*"
+    action = "drop"
+  }
+
+  // Drop all promhttp metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "promhttp_.*"
+    action = "drop"
+  }
+
+  // Drop all net_conntrack metrics
+  rule {
+    source_labels = ["__name__"]
+    regex = "net_conntrack_.*"
+    action = "drop"
+  }
+}
+
+prometheus.remote_write "metrics_local_prometheus" {
+   endpoint {
+      name = "local-prometheus"
+      url  = "http://localhost:9090/api/v1/write"
+   }
+}
