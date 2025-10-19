@@ -86,8 +86,23 @@ prometheus.exporter.unix "integrations_node_exporter" {
 }
 
 prometheus.scrape "integrations_node_exporter" {
-targets    = discovery.relabel.integrations_node_exporter.output
-forward_to = [prometheus.relabel.integrations_node_exporter.receiver]
+    targets    = discovery.relabel.integrations_node_exporter.output
+    forward_to = [prometheus.relabel.integrations_node_exporter.receiver]
+}
+
+prometheus.scrape "sonarr" {
+  targets    = [{"__address__" = "host.docker.internal:9707"}]
+  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+}
+
+prometheus.scrape "radarr" {
+  targets    = [{"__address__" = "host.docker.internal:9708"}]
+  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
+}
+
+prometheus.scrape "overseerr" {
+  targets    = [{"__address__" = "host.docker.internal:9850"}]
+  forward_to = [prometheus.remote_write.metrics_local_prometheus.receiver]
 }
 
 prometheus.relabel "integrations_node_exporter" {
