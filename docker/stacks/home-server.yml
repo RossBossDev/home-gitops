@@ -18,6 +18,7 @@ services:
       OAUTH2_PROXY_SET_BASIC_AUTH: "true"
       OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
       OAUTH2_PROXY_PASS_ACCESS_TOKEN: "true"
+      OAUTH2_PROXY_PROXY_PREFIX: "/oauth2"
       OAUTH2_PROXY_PASS_USER_HEADERS: "true"
       OAUTH2_PROXY_REDIRECT_URL: https://auth.rossreicks.com/oauth2/callback
       OAUTH2_PROXY_COOKIE_DOMAINS: .rossreicks.com
