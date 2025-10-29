@@ -29,6 +29,9 @@ services:
       OAUTH2_PROXY_COOKIE_SECURE: "true"
       OAUTH2_PROXY_AUTH_RESPONSE_HEADERS: "Authorization,X-Auth-Request-User,X-Auth-Request-Email,X-Forwarded-Preferred-Username,X-Forwarded-User"
       OAUTH2_PROXY_AUTH_ALLOWED_RESPONSE_CODES: "200,202"
+      OAUTH2_PROXY_SKIP_AUTH_REDIRECT: "false"
+      OAUTH2_PROXY_AUTH_REDIRECT_DISABLED: "false"
+      OAUTH2_PROXY_COOKIE_REFRESH: "1h"
     ports:
       - "4180:4180"
 
