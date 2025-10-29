@@ -21,8 +21,11 @@ services:
       OAUTH2_PROXY_PROXY_PREFIX: "/oauth2"
       OAUTH2_PROXY_PASS_USER_HEADERS: "true"
       OAUTH2_PROXY_REDIRECT_URL: https://auth.rossreicks.com/oauth2/callback
-      OAUTH2_PROXY_COOKIE_DOMAINS: .rossreicks.com
       OAUTH2_PROXY_BASIC_AUTH_PASSWORD: ${OAUTH2_PROXY_BASIC_AUTH_PASSWORD}
+      OAUTH2_PROXY_COOKIE_NAME: "_oauth2_proxy"
+      OAUTH2_PROXY_COOKIE_DOMAINS: ".rossreicks.com"
+      OAUTH2_PROXY_WHITELIST_DOMAINS: ".rossreicks.com"
+      OAUTH2_PROXY_COOKIE_SAMESITE: "lax"
       OAUTH2_PROXY_COOKIE_SECURE: "true"
     ports:
       - "4180:4180"
