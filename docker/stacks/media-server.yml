@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
     overseerr:
@@ -106,49 +106,6 @@ services:
             - 6789:6789 # conflicts with prowlarr
         restart: unless-stopped
 
-    mkvpriority:
-        image: ghcr.io/kennethsible/mkvpriority
-        container_name: mkvpriority
-        user: 1000:1000
-        volumes:
-            - /datapool/media/media:/media
-            - /config/mkvpriority:/config
-        restart: unless-stopped
-
-    posteria:
-        image: bozodev/posteria:latest
-        container_name: posteria
-        ports:
-          - "1818:80"
-        environment:
-          - SITE_TITLE=Posteria
-
-          - AUTH_USERNAME=${NZBGET_USER}
-          - AUTH_PASSWORD=${NZBGET_PASS}
-          - SESSION_DURATION=3600 # In seconds
-          - AUTH_BYPASS=false # DO NOT USE if you expose Posteria outside your local network
-
-          - IMAGES_PER_PAGE=24
-          - MAX_FILE_SIZE=5242880 # In bytes
-
-          - PLEX_SERVER_URL=http://192.168.1.14:32400
-          - PLEX_TOKEN=${PLEX_TOKEN}
-          - PLEX_REMOVE_OVERLAY_LABEL=true
-
-          - IGNORE_ARTICLES_IN_SORT=true # Set to false to sort with articles (A, An, The) included
-          - SORT_BY_DATE_ADDED=true
-
-          - AUTO_IMPORT_ENABLED=false # Enable/disable auto-import
-          - AUTO_IMPORT_SCHEDULE=1h # Schedule 24h, 12h, 6h, 3h, 1h
-          - AUTO_IMPORT_MOVIES=false # Import Movie posters
-          - AUTO_IMPORT_SHOWS=false # Import TV Show posters
-          - AUTO_IMPORT_SEASONS=false # Import TV season posters
-          - AUTO_IMPORT_COLLECTIONS=false # Import Collection posters
-        volumes:
-          - /datapool/media/posters:/var/www/html/posters
-          - /config/posteria:/var/www/html/data # Logs are found here
-        restart: unless-stopped
-
     tautulli:
         image: lscr.io/linuxserver/tautulli:latest
         container_name: tautulli
@@ -162,50 +119,38 @@ services:
             - /config/tautulli:/config
         restart: unless-stopped
 
-    # maintainerr:
-    #   image: ghcr.io/jorenn92/maintainerr:latest
-    #   container_name: maintainerr
-    #   user: 1000:1000
-    #   volumes:
-    #     - /config/maintainerr:/opt/data
-    #   environment:
-    #     - TZ=America/Chicago
-    #   ports:
-    #     - 6246:6246
-    #   restart: unless-stopped
-
     plex-recommendations:
-      image: silkychap/plex-recommendations-ai:latest
-      container_name: plex-recommendations
-      environment:
-        - PLEX_URL=https://plex.rossreicks.com
-        - PLEX_TOKEN=${PLEX_TOKEN}
-        - OPEN_AI_KEY=${OPEN_AI_KEY}
-        - LIBRARY_NAME=Movies
-        - COLLECTION_TITLE=Recommended Movies
-        - HISTORY_AMOUNT=30
-        - RECOMMENDED_AMOUNT=20
-        - MINIMUM_AMOUNT=5
-      restart: unless-stopped
+        image: silkychap/plex-recommendations-ai:latest
+        container_name: plex-recommendations
+        environment:
+            - PLEX_URL=https://plex.rossreicks.com
+            - PLEX_TOKEN=${PLEX_TOKEN}
+            - OPEN_AI_KEY=${OPEN_AI_KEY}
+            - LIBRARY_NAME=Movies
+            - COLLECTION_TITLE=Recommended Movies
+            - HISTORY_AMOUNT=30
+            - RECOMMENDED_AMOUNT=20
+            - MINIMUM_AMOUNT=5
+        restart: unless-stopped
 
     exportarr-sonarr:
-      image: ghcr.io/onedr0p/exportarr:latest
-      container_name: exportarr-sonarr
-      environment:
-        - PORT=9707
-        - URL=http://sonarr:8989
-        - API_KEY=${SONARR_API_KEY}
-      ports: ["9707:9707"]
-      command: ["sonarr"]
-      restart: unless-stopped
+        image: ghcr.io/onedr0p/exportarr:latest
+        container_name: exportarr-sonarr
+        environment:
+            - PORT=9707
+            - URL=http://sonarr:8989
+            - API_KEY=${SONARR_API_KEY}
+        ports: ['9707:9707']
+        command: ['sonarr']
+        restart: unless-stopped
 
     exportarr-radarr:
-      image: ghcr.io/onedr0p/exportarr:latest
-      container_name: exportarr-radarr
-      environment:
-        - PORT=9708
-        - URL=http://radarr:7878
-        - API_KEY=${RADARR_API_KEY}
-      ports: ["9708:9708"]
-      command: ["radarr"]
-      restart: unless-stopped
+        image: ghcr.io/onedr0p/exportarr:latest
+        container_name: exportarr-radarr
+        environment:
+            - PORT=9708
+            - URL=http://radarr:7878
+            - API_KEY=${RADARR_API_KEY}
+        ports: ['9708:9708']
+        command: ['radarr']
+        restart: unless-stopped
