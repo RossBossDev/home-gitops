@@ -1,19 +1,26 @@
-// Simple Alloy config - collect logs from ALL containers
+// Alloy config - collect logs from both Docker Compose and Swarm containers
 
 logging {
   level  = "debug"
   format = "logfmt"
 }
 
-// Discover all Docker containers (not Swarm-specific)
-discovery.docker "all_containers" {
+// Discover regular Docker containers (Compose, standalone)
+discovery.docker "docker_containers" {
   host             = "unix:///var/run/docker.sock"
   refresh_interval = "10s"
 }
 
-// Filter and relabel - only containers with loki.enabled=true
-discovery.relabel "add_labels" {
-  targets = discovery.docker.all_containers.targets
+// Discover Docker Swarm tasks
+discovery.dockerswarm "swarm_tasks" {
+  host             = "unix:///var/run/docker.sock"
+  role             = "tasks"
+  refresh_interval = "10s"
+}
+
+// Filter and relabel Docker containers
+discovery.relabel "docker_filtered" {
+  targets = discovery.docker.docker_containers.targets
 
   // Only keep containers with loki.enabled=true label
   rule {
@@ -28,15 +35,63 @@ discovery.relabel "add_labels" {
   }
 
   rule {
-    source_labels = ["__meta_docker_container_label_com_docker_swarm_service_name"]
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
     target_label  = "service_name"
   }
 }
 
-// Scrape logs from ALL containers
+// Filter and relabel Swarm tasks
+discovery.relabel "swarm_filtered" {
+  targets = discovery.dockerswarm.swarm_tasks.targets
+
+  // Only keep running tasks
+  rule {
+    source_labels = ["__meta_dockerswarm_task_desired_state"]
+    regex         = "running"
+    action        = "keep"
+  }
+
+  // Only keep containers with loki.enabled=true label
+  rule {
+    source_labels = ["__meta_dockerswarm_container_label_loki_enabled"]
+    regex         = "true"
+    action        = "keep"
+  }
+
+  // Map Swarm container ID to Docker container ID
+  rule {
+    source_labels = ["__meta_dockerswarm_task_container_id"]
+    target_label  = "__meta_docker_container_id"
+  }
+
+  rule {
+    source_labels = ["__meta_dockerswarm_service_name"]
+    target_label  = "service_name"
+  }
+
+  rule {
+    source_labels = ["__meta_dockerswarm_task_id"]
+    target_label  = "task_id"
+  }
+
+  rule {
+    source_labels = ["__meta_dockerswarm_container_label_com_docker_swarm_task_name"]
+    target_label  = "container"
+  }
+}
+
+// Merge both sets of targets
+discovery.relabel "merge_targets" {
+  targets = concat(
+    discovery.relabel.docker_filtered.output,
+    discovery.relabel.swarm_filtered.output,
+  )
+}
+
+// Scrape logs from both Docker and Swarm containers
 loki.source.docker "all_logs" {
   host       = "unix:///var/run/docker.sock"
-  targets    = discovery.relabel.add_labels.output
+  targets    = discovery.relabel.merge_targets.output
   forward_to = [loki.write.loki_endpoint.receiver]
 }
 
