@@ -1,69 +1,39 @@
-// Grafana Alloy configuration for Docker Swarm log collection
+// Simple Alloy config - collect logs from ALL containers
 
-// Configure logging
 logging {
   level  = "debug"
   format = "logfmt"
 }
 
-// Discover Docker Swarm tasks
-discovery.dockerswarm "swarm_tasks" {
+// Discover all Docker containers (not Swarm-specific)
+discovery.docker "all_containers" {
   host             = "unix:///var/run/docker.sock"
-  role             = "tasks"
   refresh_interval = "10s"
 }
 
-// Filter and relabel discovered targets
-discovery.relabel "filter_containers" {
-  targets = discovery.dockerswarm.swarm_tasks.targets
+// Simple relabel - just add container name
+discovery.relabel "add_labels" {
+  targets = discovery.docker.all_containers.targets
 
-  // Only keep containers with loki.enabled=true label
   rule {
-    source_labels = ["__meta_dockerswarm_container_label_loki_enabled"]
-    regex         = "true"
-    action        = "keep"
+    source_labels = ["__meta_docker_container_name"]
+    target_label  = "container"
   }
 
-  // CRITICAL: Map Swarm task container ID to Docker container ID label
-  // loki.source.docker requires __meta_docker_container_id
   rule {
-    source_labels = ["__meta_dockerswarm_task_container_id"]
-    target_label  = "__meta_docker_container_id"
-  }
-
-  // Add service name label
-  rule {
-    source_labels = ["__meta_dockerswarm_service_name"]
+    source_labels = ["__meta_docker_container_label_com_docker_swarm_service_name"]
     target_label  = "service_name"
-  }
-
-  // Add task ID label
-  rule {
-    source_labels = ["__meta_dockerswarm_task_id"]
-    target_label  = "task_id"
-  }
-
-  // Add node ID label
-  rule {
-    source_labels = ["__meta_dockerswarm_node_id"]
-    target_label  = "node_id"
-  }
-
-  // Add container name label
-  rule {
-    source_labels = ["__meta_dockerswarm_container_label_com_docker_swarm_task_name"]
-    target_label  = "container_name"
   }
 }
 
-// Scrape Docker logs
-loki.source.docker "swarm_logs" {
+// Scrape logs from ALL containers
+loki.source.docker "all_logs" {
   host       = "unix:///var/run/docker.sock"
-  targets    = discovery.relabel.filter_containers.output
+  targets    = discovery.relabel.add_labels.output
   forward_to = [loki.write.loki_endpoint.receiver]
 }
 
-// Send logs to Loki
+// Send to Loki
 loki.write "loki_endpoint" {
   endpoint {
     url = "http://loki:3100/loki/api/v1/push"
