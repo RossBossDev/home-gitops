@@ -1,0 +1,54 @@
+version: '3.8'
+
+networks:
+  grafana-net:
+    driver: bridge
+  dokploy-network:
+    external: true # Everything needs to be on the dokploy network to talk to traefik
+
+volumes:
+  grafana_data:
+  loki_data:
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - grafana-net
+      - dokploy-network
+    depends_on:
+      - loki
+    restart: unless-stopped
+    ports:
+      - '3030:3000'
+
+  loki:
+    image: grafana/loki:3.5
+    container_name: loki
+    volumes:
+      - ./loki.yml:/etc/loki/config.yaml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/config.yaml
+    networks:
+      - grafana-net
+      - dokploy-network
+    restart: unless-stopped
+
+  # Grafana Alloy Service (Agent for Logs and Metrics)
+  alloy:
+      image: grafana/alloy:v1.8.3
+      container_name: alloy
+      volumes:
+        - ./config.alloy:/etc/config.alloy
+        - /var/lib/docker/containers:/var/lib/docker/containers:ro
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+      command: run /etc/config.alloy --server.http.listen-addr=0.0.0.0:12345
+      networks:
+        - grafana-net
+        - dokploy-network
+      depends_on:
+        - loki
+      restart: unless-stopped
