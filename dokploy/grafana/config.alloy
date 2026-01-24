@@ -1,44 +1,56 @@
-// This configuration uses Grafana Alloy's native syntax (based on CUE)
+// This configuration uses Grafana Alloy's native syntax
 // to scrape Docker container logs and forward them to Loki.
 
-// discover all containers running on the docker instance
-discovery.docker "containers" {
-  host = "unix:///var/run/docker.sock"
+logging {
+  level  = "debug"
+  format = "logfmt"
+}
+
+// discover all containers in Docker Swarm
+discovery.dockerswarm "containers" {
+  host             = "unix:///var/run/docker.sock"
+  role             = "tasks"
+  refresh_interval = "5s"
 }
 
 // relabel configuration to filter and annotate containers
 discovery.relabel "add_metadata" {
-  targets = discovery.docker.containers.targets
+  targets = discovery.dockerswarm.containers.targets
 
   // Only keep containers with loki.enabled=true label
   rule {
-    source_labels = ["__meta_docker_container_label_loki_enabled"]
+    source_labels = ["__meta_dockerswarm_container_label_loki_enabled"]
     regex         = "true"
     action        = "keep"
   }
 
   rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    source_labels = ["__meta_dockerswarm_service_name"]
     target_label  = "service_name"
   }
 
   rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
-    target_label  = "project"
+    source_labels = ["__meta_dockerswarm_task_id"]
+    target_label  = "task_id"
   }
 
   rule {
-    source_labels = ["__meta_docker_container_id"]
-    target_label  = "instance_id"
+    source_labels = ["__meta_dockerswarm_container_label_com_docker_swarm_service_name"]
+    target_label  = "swarm_service"
+  }
+
+  rule {
+    source_labels = ["__meta_dockerswarm_node_id"]
+    target_label  = "node_id"
   }
 }
 
 // define a loki.source.docker component to scrape logs from discovered docker containers.
 loki.source.docker "docker_logs" {
-  host = "unix:///var/run/docker.sock"
+  host    = "unix:///var/run/docker.sock"
   targets = discovery.relabel.add_metadata.output
 
-  forward_to = [loki.write.default.receiver] // connect the output to loki.write
+  forward_to = [loki.write.default.receiver]
 }
 
 // define a loki.write component to send the processed logs to the Loki instance.
