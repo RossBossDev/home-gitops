@@ -11,9 +11,16 @@ discovery.docker "all_containers" {
   refresh_interval = "10s"
 }
 
-// Simple relabel - just add container name
+// Filter and relabel - only containers with loki.enabled=true
 discovery.relabel "add_labels" {
   targets = discovery.docker.all_containers.targets
+
+  // Only keep containers with loki.enabled=true label
+  rule {
+    source_labels = ["__meta_docker_container_label_loki_enabled"]
+    regex         = "true"
+    action        = "keep"
+  }
 
   rule {
     source_labels = ["__meta_docker_container_name"]
