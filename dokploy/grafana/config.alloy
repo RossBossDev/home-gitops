@@ -1,21 +1,21 @@
-// This configuration uses Grafana Alloy's native syntax
-// to scrape Docker container logs and forward them to Loki.
+// Grafana Alloy configuration for Docker Swarm log collection
 
+// Configure logging
 logging {
   level  = "debug"
   format = "logfmt"
 }
 
-// discover all containers in Docker Swarm
-discovery.dockerswarm "containers" {
+// Discover Docker Swarm tasks
+discovery.dockerswarm "swarm_tasks" {
   host             = "unix:///var/run/docker.sock"
   role             = "tasks"
-  refresh_interval = "5s"
+  refresh_interval = "10s"
 }
 
-// relabel configuration to filter and annotate containers
-discovery.relabel "add_metadata" {
-  targets = discovery.dockerswarm.containers.targets
+// Filter and relabel discovered targets
+discovery.relabel "filter_containers" {
+  targets = discovery.dockerswarm.swarm_tasks.targets
 
   // Only keep containers with loki.enabled=true label
   rule {
@@ -24,38 +24,41 @@ discovery.relabel "add_metadata" {
     action        = "keep"
   }
 
+  // Add service name label
   rule {
     source_labels = ["__meta_dockerswarm_service_name"]
     target_label  = "service_name"
   }
 
+  // Add task ID label
   rule {
     source_labels = ["__meta_dockerswarm_task_id"]
     target_label  = "task_id"
   }
 
-  rule {
-    source_labels = ["__meta_dockerswarm_container_label_com_docker_swarm_service_name"]
-    target_label  = "swarm_service"
-  }
-
+  // Add node ID label
   rule {
     source_labels = ["__meta_dockerswarm_node_id"]
     target_label  = "node_id"
   }
+
+  // Add container name label
+  rule {
+    source_labels = ["__meta_dockerswarm_container_label_com_docker_swarm_task_name"]
+    target_label  = "container_name"
+  }
 }
 
-// define a loki.source.docker component to scrape logs from discovered docker containers.
-loki.source.docker "docker_logs" {
-  host    = "unix:///var/run/docker.sock"
-  targets = discovery.relabel.add_metadata.output
-
-  forward_to = [loki.write.default.receiver]
+// Scrape Docker logs
+loki.source.docker "swarm_logs" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.filter_containers.output
+  forward_to = [loki.write.loki_endpoint.receiver]
 }
 
-// define a loki.write component to send the processed logs to the Loki instance.
-loki.write "default" {
+// Send logs to Loki
+loki.write "loki_endpoint" {
   endpoint {
-    url = "http://loki:3100/loki/api/v1/push" // Loki push endpoint
+    url = "http://loki:3100/loki/api/v1/push"
   }
 }
